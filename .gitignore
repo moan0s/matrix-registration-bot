@@ -1,4 +1,5 @@
 config.yml
 __pycache__
 session.txt
+.idea
 
