@@ -1,0 +1,3 @@
+requests
+simplematrixbotlib
+pyyaml
