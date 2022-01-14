@@ -14,7 +14,6 @@ class RegistrationAPI():
         return f"API Connection to {self.base_url}"
 
     def list_token(self):
-        print(self.headers)
         r = requests.get(self.base_url, headers=self.headers)
         return r.json()
 
