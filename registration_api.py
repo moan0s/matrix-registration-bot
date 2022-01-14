@@ -35,7 +35,6 @@ class RegistrationAPI():
 
     def delete_token(self, token: str):
         r = requests.delete(self.base_url + f"/{token}", headers=self.headers)
-        print(r)
 
     def create_token(self, expiry_days=7):
         """

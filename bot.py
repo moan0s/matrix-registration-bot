@@ -4,7 +4,6 @@ import yaml
 
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
-    print(config)
 
 bot_username = config['bot']['username']
 bot_access_token = config['bot']['access_token']
