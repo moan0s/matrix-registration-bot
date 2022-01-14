@@ -3,7 +3,7 @@ from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
 
 
-class RegisterAPI():
+class RegistrationAPI():
     def __init__(self, base_url:str, token:str):
         self.base_url = base_url
         self.token = token

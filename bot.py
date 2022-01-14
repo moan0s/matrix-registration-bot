@@ -1,5 +1,5 @@
 import simplematrixbotlib as botlib
-from token_register import RegisterAPI
+from registration_api import RegistrationAPI
 import yaml
 
 with open('config.yml', 'r') as file:
@@ -18,14 +18,14 @@ creds = botlib.Creds("https://synapse.hyteck.de",
 bot = botlib.Bot(creds)
 PREFIX = '!'
 
-register_api = RegisterAPI(api_base_url, api_token)
+api = RegistrationAPI(api_base_url, api_token)
 
 @bot.listener.on_message_event
 async def list_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("list"):
-        token_list = register_api.list_token()
+        token_list = api.list_token()
         await bot.api.send_text_message(room.room_id, f"{token_list}")
 
 @bot.listener.on_message_event
@@ -33,7 +33,7 @@ async def list_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("create"):
-        token_list = register_api.create_token()
+        token_list = api.create_token()
         await bot.api.send_text_message(room.room_id, f"{token_list}")
 
 bot.run()
