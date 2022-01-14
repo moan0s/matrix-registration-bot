@@ -1,0 +1,7 @@
+bot:
+  username: "registerbot"
+  access_token: "verysecret"
+api:
+  base_url: 'https://synapse.example.com/_synapse/admin/v1/registration_tokens'
+  token: "supersecret"
+
