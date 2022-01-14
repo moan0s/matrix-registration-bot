@@ -5,12 +5,13 @@ import yaml
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
 
+bot_server = config['bot']['server']
 bot_username = config['bot']['username']
 bot_access_token = config['bot']['access_token']
 api_base_url = config['api']['base_url']
 api_token = config['api']['token']
 
-creds = botlib.Creds("https://synapse.hyteck.de",
+creds = botlib.Creds(bot_server,
                      username = bot_username,
                      access_token = bot_access_token,
                      session_stored_file="session.txt")
