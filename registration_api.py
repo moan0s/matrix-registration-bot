@@ -1,8 +1,9 @@
 import re
-
 import requests
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
+import aiohttp
+import asyncio
 
 
 class RegistrationAPI:
@@ -11,9 +12,24 @@ class RegistrationAPI:
         self.token = token
         self.headers = CaseInsensitiveDict()
         self.headers["Authorization"] = f"Bearer {token}"
+        self.session = None
 
     def __str__(self):
         return f"API Connection to {self.base_url}"
+
+    async def ensure_session(self):
+        if self.session is None:
+            self.session = aiohttp.ClientSession(self.base_url)
+
+    async def list_tokens(self):
+        """
+        Gathers a list of all registration tokens
+
+        :return: List of token
+        """
+        await self.ensure_session()
+        async with self.session.get(headers=self.headers) as r:
+            return (await r.json())["registration_tokens"]
 
     @staticmethod
     def token_to_markdown(token_as_dict: dict):

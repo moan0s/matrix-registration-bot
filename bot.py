@@ -1,6 +1,8 @@
 import simplematrixbotlib as botlib
 from registration_api import RegistrationAPI
 import yaml
+import asyncio
+import aiohttp
 
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
@@ -12,18 +14,18 @@ api_base_url = config['api']['base_url']
 api_token = config['api']['token']
 
 creds = botlib.Creds(bot_server,
-                     username = bot_username,
-                     access_token = bot_access_token,
+                     username=bot_username,
+                     access_token=bot_access_token,
                      session_stored_file="session.txt")
 bot = botlib.Bot(creds)
 PREFIX = '!'
 
 api = RegistrationAPI(api_base_url, api_token)
 
+
 @bot.listener.on_message_event
 async def list_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
-
     if match.is_not_from_this_bot() and match.prefix() and match.command("list"):
         token_list = api.list_tokens()
         if len(token_list) < 10:
@@ -32,6 +34,7 @@ async def list_token(room, message):
             tokens_as_string = [RegistrationAPI.token_to_short_markdown(token) for token in token_list]
             message = f"All tokens: {', '.join(tokens_as_string)}"
         await bot.api.send_markdown_message(room.room_id, message)
+
 
 @bot.listener.on_message_event
 async def create_token(room, message):
@@ -51,6 +54,7 @@ async def send_info_on_deleted_token(room, token_list):
         message = "No token deleted"
     await bot.api.send_markdown_message(room.room_id, message)
 
+
 @bot.listener.on_message_event
 async def delete_all_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -58,7 +62,6 @@ async def delete_all_token(room, message):
     if match.is_not_from_this_bot() and match.prefix() and match.command("delete-all"):
         deleted_tokens = api.delete_all_token()
         await send_info_on_deleted_token(room, deleted_tokens)
-
 
 
 @bot.listener.on_message_event
@@ -75,6 +78,7 @@ async def delete_token(room, message):
             except TypeError as e:
                 await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
         await send_info_on_deleted_token(room, deleted_tokens)
+
 
 @bot.listener.on_message_event
 async def show_token(room, message):
@@ -103,6 +107,7 @@ You can always message my creator @moanos:hyteck.de if you have questions
 * `!delete-all` Deletes all token"
 """)
 
+
 @bot.listener.on_message_event
 async def help(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
@@ -111,4 +116,3 @@ async def help(room, message):
         await bot.api.send_markdown_message(room.room_id, help_string)
 
 bot.run()
-
