@@ -1,3 +1,4 @@
 requests
-simplematrixbotlib
+simplematrixbotlib>=2.6.0,<3.0.0
 pyyaml
+aiohttp[speedups]
