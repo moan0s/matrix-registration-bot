@@ -1,3 +1,5 @@
+import re
+
 import requests
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
@@ -12,6 +14,19 @@ class RegistrationAPI():
 
     def __str__(self):
         return f"API Connection to {self.base_url}"
+
+    @staticmethod
+    def valid_token_format(token: str):
+        """
+        Checks if a string is a valid token.
+
+        The string is checked against a regex pattern. Due to the restricted nature of the token format, the string is
+        safe to use when in this format. More information: https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html#create-token
+        :param token: The token to check
+        :return:bool: True if the token is in valid format, else false
+        """
+        pattern = re.compile("[A-Za-z0-9._~-]")
+        return re.fullmatch(pattern, token)
 
     def list_tokens(self):
         """
@@ -34,7 +49,10 @@ class RegistrationAPI():
         return all_tokens
 
     def delete_token(self, token: str):
-        r = requests.delete(self.base_url + f"/{token}", headers=self.headers)
+        if self.valid_token_format(token):
+            r = requests.delete(self.base_url + f"/{token}", headers=self.headers)
+        else:
+            raise TypeError("Token is not a valid format!")
 
     def create_token(self, expiry_days=7):
         """
