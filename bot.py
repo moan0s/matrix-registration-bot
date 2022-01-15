@@ -39,10 +39,12 @@ async def create_token(room, message):
 
 async def send_info_on_deleted_token(room, token_list):
     if len(token_list) > 0:
-        message = f"Deleted the following token(s) {',  '.join(token_list)}"
+        message = f"Deleted the following token(s): "
+        tokens_as_string = [ f"`{token['token']}`" for token in token_list]
+        message += ", ".join(tokens_as_string)
     else:
         message = "No token deleted"
-    await bot.api.send_text_message(room.room_id, message)
+    await bot.api.send_markdown_message(room.room_id, message)
 
 @bot.listener.on_message_event
 async def delete_all_token(room, message):
@@ -50,7 +52,7 @@ async def delete_all_token(room, message):
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("delete-all"):
         deleted_tokens = api.delete_all_token()
-        send_info_on_deleted_token(room, deleted_tokens)
+        await send_info_on_deleted_token(room, deleted_tokens)
 
 
 
