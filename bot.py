@@ -55,6 +55,21 @@ async def delete_token(room, message):
             deleted_tokens.append(token)
         await bot.api.send_text_message(room.room_id, f"Deleted the following token {deleted_tokens}")
 
+help_string = (f"""
+You can always message my creator @moanos:hyteck.de if you have questions
+
+* `!list`: Lists all registration tokens
+* `!create`: Creates a token that that is valid for one registration for seven days
+* `!delete <token>` Deletes the specified token
+* `!delete-all` Deletes all token"
+""")
+
+@bot.listener.on_message_event
+async def delete_token(room, message):
+    match = botlib.MessageMatch(room, message, bot, PREFIX)
+
+    if match.is_not_from_this_bot() and match.contains("help"):
+        await bot.api.send_markdown_message(room.room_id, help_string)
 
 bot.run()
 

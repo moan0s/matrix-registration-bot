@@ -1,9 +1,50 @@
-# Registerbot
+# Matrix Registration Bot
 
 This bot aims to create and manage registration tokens for a matrix server. It wants to help invitation based servers to maintain usability.
 
+# Getting started
+
+## Prerequisites
+
+**Server configuration**
+
+Your server should be configured to a token restricted registration. Add the following to your `homeserver.yaml`:
+```yaml
+enable_registration: true
+registration_requires_token: true
+```
+
+Then you need to create an account for the bot on the server, like you would do with any other account.
+A good username is `registration-bot`. Also note the access token of the bot. One way to get the token is to login as 
+the bot and got to Settings -> Help & About -> Access Token in Element.
+
+Once you are finished you can start the installation of the bot.
+
+## Installation
+
+Download the project from GitHub
+```bash
+$ https://github.com/moan0s/matrix-registration-bot
+$ cd matrix-registration-bot
+```
+
+then adjust the configuration by copying and editing the example config.
+´´´bash
+$ cp example_config.yml config.yml
+´´´
+
+You can then simply start the bot with
+```bash
+python bot.py
+```
+
+# Usage
+
+Open a Direct Message to the bot. The type one of the following commands.
+
 # Supported commands
 
+* `!help`: Shows this help
 * `!list`: Lists all registration token
 * `!create`: Creates a token that that is valid for one registration for seven days
 * `!delete <token>` Deletes the specified token
