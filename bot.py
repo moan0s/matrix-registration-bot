@@ -38,8 +38,8 @@ async def create_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("create"):
-        token_list = api.create_token()
-        await bot.api.send_text_message(room.room_id, f"{token_list}")
+        token = api.create_token()
+        await bot.api.send_markdown_message(room.room_id, f"{RegistrationAPI.token_to_markdown(token)}")
 
 
 async def send_info_on_deleted_token(room, token_list):
