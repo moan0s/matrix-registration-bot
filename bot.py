@@ -11,6 +11,7 @@ bot_server = config['bot']['server']
 bot_username = config['bot']['username']
 bot_access_token = config['bot']['access_token']
 api_base_url = config['api']['base_url']
+api_endpoint = config['api']['endpoint']
 api_token = config['api']['token']
 
 creds = botlib.Creds(bot_server,
@@ -20,7 +21,7 @@ creds = botlib.Creds(bot_server,
 bot = botlib.Bot(creds)
 PREFIX = '!'
 
-api = RegistrationAPI(api_base_url, api_token)
+api = RegistrationAPI(api_base_url, api_endpoint, api_token)
 
 
 @bot.listener.on_message_event

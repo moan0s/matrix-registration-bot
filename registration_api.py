@@ -7,8 +7,9 @@ import asyncio
 
 
 class RegistrationAPI:
-    def __init__(self, base_url: str, token: str):
+    def __init__(self, base_url: str, endpoint: str, token: str):
         self.base_url = base_url
+        self.endpoint = endpoint
         self.token = token
         self.headers = CaseInsensitiveDict()
         self.headers["Authorization"] = f"Bearer {token}"
@@ -28,7 +29,7 @@ class RegistrationAPI:
         :return: List of token
         """
         await self.ensure_session()
-        async with self.session.get(headers=self.headers) as r:
+        async with self.session.get(self.endpoint, headers=self.headers) as r:
             return (await r.json())["registration_tokens"]
 
     @staticmethod
