@@ -1,6 +1,8 @@
 # Matrix Registration Bot
 
 This bot aims to create and manage registration tokens for a matrix server. It wants to help invitation based servers to maintain usability.
+It does not create a user itself, but rather aims to make use of [MSC3231](https://github.com/matrix-org/matrix-doc/blob/main/proposals/3231-token-authenticated-registration.md).
+The feature is still experimental. Mor information can be found in the [Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
 
 # Getting started
 
@@ -53,3 +55,9 @@ Open a Direct Message to the bot. The type one of the following commands.
 # Security
 
 The bot in the current state is very unsafe (unchecked input is fed into requests).
+
+# Contibuting
+
+Feel free to contribute or discuss this bot with me. You can reach me via @moanos:hyteck.de. The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).
+
+[Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)
