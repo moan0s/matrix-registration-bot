@@ -53,6 +53,7 @@ Open a Direct Message to the bot. The type one of the following commands.
 
 * `!help`: Shows this help
 * `!list`: Lists all registration token
+* `!show <token>`: Shows token details in human-readable format
 * `!create`: Creates a token that that is valid for one registration for seven days
 * `!delete <token>` Deletes the specified token
 * `!delete-all` Deletes all token

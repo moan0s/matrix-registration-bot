@@ -69,17 +69,35 @@ async def delete_token(room, message):
                 await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
         await send_info_on_deleted_token(room, deleted_tokens)
 
+@bot.listener.on_message_event
+async def show_token(room, message):
+    match = botlib.MessageMatch(room, message, bot, PREFIX)
+
+    if match.is_not_from_this_bot() and match.prefix() and match.command("show"):
+        tokens_info = []
+        for token in match.args():
+            token = token.strip()
+            try:
+                token_info = api.get_token(token)
+                tokens_info.append(RegistrationAPI.token_to_markdown(token_info))
+            except TypeError as e:
+                await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
+        await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
+
+
 help_string = (f"""
 You can always message my creator @moanos:hyteck.de if you have questions
 
+* `!help`: Shows this help
 * `!list`: Lists all registration tokens
+* `!show <token>`: Shows token details in human-readable format
 * `!create`: Creates a token that that is valid for one registration for seven days
 * `!delete <token>` Deletes the specified token(s)
 * `!delete-all` Deletes all token"
 """)
 
 @bot.listener.on_message_event
-async def delete_token(room, message):
+async def help(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.contains("help"):
