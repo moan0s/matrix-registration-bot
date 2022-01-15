@@ -2,7 +2,7 @@
 
 This bot aims to create and manage registration tokens for a matrix server. It wants to help invitation based servers to maintain usability.
 It does not create a user itself, but rather aims to make use of [MSC3231](https://github.com/matrix-org/matrix-doc/blob/main/proposals/3231-token-authenticated-registration.md).
-The feature is still experimental. Mor information can be found in the [Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
+The feature is still experimental. More information can be found in the [Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
 
 # Getting started
 
@@ -11,10 +11,13 @@ The feature is still experimental. Mor information can be found in the [Synapse 
 **Server configuration**
 
 Your server should be configured to a token restricted registration. Add the following to your `homeserver.yaml`:
+
 ```yaml
 enable_registration: true
 registration_requires_token: true
 ```
+
+**Create a bot account**
 
 Then you need to create an account for the bot on the server, like you would do with any other account.
 A good username is `registration-bot`. Also note the access token of the bot. One way to get the token is to login as 
@@ -32,11 +35,12 @@ $ cd matrix-registration-bot
 
 then adjust the configuration by copying and editing the example config.
 
-´´´bash
+```bash
 $ cp example_config.yml config.yml
-´´´
+```
 
 You can then simply start the bot with
+
 ```bash
 python bot.py
 ```
