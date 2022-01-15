@@ -18,7 +18,7 @@ class RegistrationAPI:
     @staticmethod
     def token_to_markdown(token_as_dict: dict):
         """
-        Converts a token in json to markdown string
+        Converts a token to markdown string
 
         :param token_as_dict: A dictionary containing the token
             Example: {'token': '8iB~zWiDU1SC0NT3',
@@ -43,6 +43,21 @@ class RegistrationAPI:
         """)
         return md
 
+    @staticmethod
+    def token_to_short_markdown(token_as_dict: dict):
+        """
+        Converts a token to markdown string
+
+        :param token_as_dict: A dictionary containing the token
+            Example: {'token': '8iB~zWiDU1SC0NT3',
+                      'uses_allowed': 1,
+                      'pending': 0,
+                      'completed': 1,
+                      'expiry_time': 1642807497388}
+        :return: a string of only the token value in markdown format
+        """
+        md = f"`{token_as_dict['token']}`"
+        return md
 
     @staticmethod
     def valid_token_format(token: str):
@@ -77,6 +92,8 @@ class RegistrationAPI:
         """
         if self.valid_token_format(token):
             r = requests.get(self.base_url + f"/{token}", headers=self.headers)
+        else:
+            raise TypeError("Token is not a valid format!")
         return r.json()
 
     def delete_all_token(self):
@@ -91,8 +108,20 @@ class RegistrationAPI:
         return all_tokens
 
     def delete_token(self, token: str):
+        """
+        Deletes the given token
+
+        :param token:
+        :return: The token that is deleted
+        """
         if self.valid_token_format(token):
-            r = requests.delete(self.base_url + f"/{token}", headers=self.headers)
+            r_token = requests.get(self.base_url + f"/{token}", headers=self.headers)
+            if r_token.status_code != 200:
+                raise FileNotFoundError("Token not found")
+            else:
+                token = r_token.json()
+                r = requests.delete(self.base_url + f"/{token}", headers=self.headers)
+                return token
         else:
             raise TypeError("Token is not a valid format!")
 

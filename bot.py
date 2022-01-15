@@ -40,7 +40,7 @@ async def create_token(room, message):
 async def send_info_on_deleted_token(room, token_list):
     if len(token_list) > 0:
         message = f"Deleted the following token(s): "
-        tokens_as_string = [ f"`{token['token']}`" for token in token_list]
+        tokens_as_string = [RegistrationAPI.token_to_short_markdown(token) for token in token_list]
         message += ", ".join(tokens_as_string)
     else:
         message = "No token deleted"
@@ -65,7 +65,7 @@ async def delete_token(room, message):
         for token in match.args():
             token = token.strip()
             try:
-                api.delete_token(token)
+                token = api.delete_token(token)
                 deleted_tokens.append(token)
             except TypeError as e:
                 await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
