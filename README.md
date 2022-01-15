@@ -31,6 +31,7 @@ $ cd matrix-registration-bot
 ```
 
 then adjust the configuration by copying and editing the example config.
+
 ´´´bash
 $ cp example_config.yml config.yml
 ´´´
