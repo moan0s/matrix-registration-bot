@@ -110,7 +110,7 @@ You can always message my creator @moanos:hyteck.de if you have questions
 
 
 @bot.listener.on_message_event
-async def help(room, message):
+async def bot_help(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.contains("help"):
