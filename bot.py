@@ -26,7 +26,12 @@ async def list_token(room, message):
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("list"):
         token_list = api.list_tokens()
-        await bot.api.send_text_message(room.room_id, f"{token_list}")
+        if len(token_list) < 10:
+            message = "\n".join([RegistrationAPI.token_to_markdown(token) for token in token_list])
+        else:
+            tokens_as_string = [RegistrationAPI.token_to_short_markdown(token) for token in token_list]
+            message = f"All tokens: {', '.join(tokens_as_string)}"
+        await bot.api.send_markdown_message(room.room_id, message)
 
 @bot.listener.on_message_event
 async def create_token(room, message):
