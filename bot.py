@@ -36,13 +36,23 @@ async def create_token(room, message):
         token_list = api.create_token()
         await bot.api.send_text_message(room.room_id, f"{token_list}")
 
+
+async def send_info_on_deleted_token(room, token_list):
+    if len(token_list) > 0:
+        message = f"Deleted the following token(s) {',  '.join(token_list)}"
+    else:
+        message = "No token deleted"
+    await bot.api.send_text_message(room.room_id, message)
+
 @bot.listener.on_message_event
 async def delete_all_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("delete-all"):
-        token_list = api.delete_all_token()
-        await bot.api.send_text_message(room.room_id, f"Deleted the following token {token_list}")
+        deleted_tokens = api.delete_all_token()
+        send_info_on_deleted_token(room, deleted_tokens)
+
+
 
 @bot.listener.on_message_event
 async def delete_token(room, message):
@@ -51,16 +61,20 @@ async def delete_token(room, message):
     if match.is_not_from_this_bot() and match.prefix() and match.command("delete"):
         deleted_tokens = []
         for token in match.args():
-            api.delete_token(token)
-            deleted_tokens.append(token)
-        await bot.api.send_text_message(room.room_id, f"Deleted the following token {deleted_tokens}")
+            token = token.strip()
+            try:
+                api.delete_token(token)
+                deleted_tokens.append(token)
+            except TypeError as e:
+                await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
+        await send_info_on_deleted_token(room, deleted_tokens)
 
 help_string = (f"""
 You can always message my creator @moanos:hyteck.de if you have questions
 
 * `!list`: Lists all registration tokens
 * `!create`: Creates a token that that is valid for one registration for seven days
-* `!delete <token>` Deletes the specified token
+* `!delete <token>` Deletes the specified token(s)
 * `!delete-all` Deletes all token"
 """)
 

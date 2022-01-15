@@ -25,8 +25,11 @@ class RegistrationAPI():
         :param token: The token to check
         :return:bool: True if the token is in valid format, else false
         """
-        pattern = re.compile("[A-Za-z0-9._~-]")
-        return re.fullmatch(pattern, token)
+        if len(token) > 64:
+            return False
+        pattern = re.compile("[A-Za-z0-9._~-]*")
+        match = re.fullmatch(pattern, token)
+        return match
 
     def list_tokens(self):
         """
