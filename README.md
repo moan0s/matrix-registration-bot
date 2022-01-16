@@ -27,27 +27,40 @@ Once you are finished you can start the installation of the bot.
 
 ## Installation
 
-Download the project from GitHub
+The installation can easily be done via [PyPi](https://pypi.org/project/matrix-registration-bot/)
 ```bash
-$ https://github.com/moan0s/matrix-registration-bot
-$ cd matrix-registration-bot
+$ pip install matrix-registration-bot
 ```
 
-then adjust the configuration by copying and editing the example config.
+## Configuration
 
-```bash
-$ cp example_config.yml config.yml
+Configure the bot with a file named `config.yml`. It should look like this
+
+```yaml
+bot:
+  server: "https://synapse.example.com"
+  username: "registerbot"
+  access_token: "verysecret"
+api:
+  # API endpoint of the registration tokens
+  base_url: 'https://synapse.example.com'
+  endpoint: '/_synapse/admin/v1/registration_tokens'
+  # Access token of an administrator on the server
+  token: "supersecret"
+
+
 ```
 
-You can then simply start the bot with
 
-```bash
-python matrix_registration_bot/bot.py
-```
 
 # Usage
 
-Open a Direct Message to the bot. The type one of the following commands.
+Start the bot with 
+```bash
+python -m matrix_registration_bot.bot
+```
+
+and then open a Direct Message to the bot. The type one of the following commands.
 
 # Supported commands
 
@@ -57,10 +70,6 @@ Open a Direct Message to the bot. The type one of the following commands.
 * `!create`: Creates a token that that is valid for one registration for seven days
 * `!delete <token>` Deletes the specified token
 * `!delete-all` Deletes all token
-
-# Security
-
-The bot in the current state is very unsafe (unchecked input is fed into requests).
 
 # Contributing
 

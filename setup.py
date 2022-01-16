@@ -8,7 +8,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="Matrix Registration Bot",
+    name="matrix-registration-bot",
     version="0.0.1",
     description="A bot to manage user registrations of a matrix server.",
     long_description=long_description,
