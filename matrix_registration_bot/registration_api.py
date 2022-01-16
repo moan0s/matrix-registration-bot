@@ -113,6 +113,7 @@ class RegistrationAPI:
 
         :return: List of deleted token
         """
+        await self.ensure_session()
         all_tokens = await self.list_tokens()
         for token in all_tokens:
             await self.delete_token(token["token"])
@@ -146,7 +147,8 @@ class RegistrationAPI:
             Determines how long the token will be valid (in days)
         :return: token_details
         """
+        await self.ensure_session()
         expiry_time = int(datetime.timestamp(datetime.now() + timedelta(days=expiry_days)) * 1000)
         data = '{"uses_allowed": 1, "expiry_time": ' + str(expiry_time) + '}'
-        async with self.session.delete(f"{self.endpoint}/new", data=data, headers=self.headers) as r:
+        async with self.session.post(f"{self.endpoint}/new", data=data, headers=self.headers) as r:
             return await r.json()

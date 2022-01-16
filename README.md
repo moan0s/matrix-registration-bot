@@ -42,7 +42,7 @@ $ cp example_config.yml config.yml
 You can then simply start the bot with
 
 ```bash
-python bot.py
+python matrix_registration_bot/bot.py
 ```
 
 # Usage
@@ -62,7 +62,7 @@ Open a Direct Message to the bot. The type one of the following commands.
 
 The bot in the current state is very unsafe (unchecked input is fed into requests).
 
-# Contibuting
+# Contributing
 
 Feel free to contribute or discuss this bot with me. You can reach me via @moanos:hyteck.de. The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).
 
