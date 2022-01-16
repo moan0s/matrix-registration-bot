@@ -1,18 +1,16 @@
 import re
-import requests
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
 import aiohttp
-import asyncio
 
 
 class RegistrationAPI:
-    def __init__(self, base_url: str, endpoint: str, token: str):
+    def __init__(self, base_url: str, endpoint: str, api_token: str):
         self.base_url = base_url
         self.endpoint = endpoint
-        self.token = token
+        self.api_token = api_token
         self.headers = CaseInsensitiveDict()
-        self.headers["Authorization"] = f"Bearer {token}"
+        self.headers["Authorization"] = f"Bearer {api_token}"
         self.session = None
 
     def __str__(self):
@@ -22,22 +20,12 @@ class RegistrationAPI:
         if self.session is None:
             self.session = aiohttp.ClientSession(self.base_url)
 
-    async def list_tokens(self):
-        """
-        Gathers a list of all registration tokens
-
-        :return: List of token
-        """
-        await self.ensure_session()
-        async with self.session.get(self.endpoint, headers=self.headers) as r:
-            return (await r.json())["registration_tokens"]
-
     @staticmethod
-    def token_to_markdown(token_as_dict: dict):
+    def token_to_markdown(token_details: dict):
         """
         Converts a token to markdown string
 
-        :param token_as_dict: A dictionary containing the token
+        :param token_details: A dictionary containing the token
             Example: {'token': '8iB~zWiDU1SC0NT3',
                       'uses_allowed': 1,
                       'pending': 0,
@@ -45,27 +33,27 @@ class RegistrationAPI:
                       'expiry_time': 1642807497388}
         :return: a string in markdown format
         """
-        if token_as_dict['uses_allowed'] is None:
+        if token_details['uses_allowed'] is None:
             uses_left = "Unlimited"
         else:
-            uses_left = token_as_dict['uses_allowed'] - (token_as_dict['completed'] + token_as_dict['pending'])
-        if token_as_dict['expiry_time'] is None:
+            uses_left = token_details['uses_allowed'] - (token_details['completed'] + token_details['pending'])
+        if token_details['expiry_time'] is None:
             timestamp = "Does not expire"
         else:
-            datetime_obj = datetime.utcfromtimestamp(int(token_as_dict['expiry_time'])/1000)
+            datetime_obj = datetime.utcfromtimestamp(int(token_details['expiry_time']) / 1000)
             timestamp = datetime_obj.strftime("%d.%m.%y %H:%M UTC")
-        md = (f"""**Token:** `{token_as_dict['token']}`
+        md = (f"""**Token:** `{token_details['token']}`
         Expires: {timestamp}
         Uses left: {uses_left}
         """)
         return md
 
     @staticmethod
-    def token_to_short_markdown(token_as_dict: dict):
+    def token_to_short_markdown(token_details: dict):
         """
         Converts a token to markdown string
 
-        :param token_as_dict: A dictionary containing the token
+        :param token_details: A dictionary containing the token
             Example: {'token': '8iB~zWiDU1SC0NT3',
                       'uses_allowed': 1,
                       'pending': 0,
@@ -73,7 +61,7 @@ class RegistrationAPI:
                       'expiry_time': 1642807497388}
         :return: a string of only the token value in markdown format
         """
-        md = f"`{token_as_dict['token']}`"
+        md = f"`{token_details['token']}`"
         return md
 
     @staticmethod
@@ -92,64 +80,73 @@ class RegistrationAPI:
         match = re.fullmatch(pattern, token)
         return match
 
-    def list_tokens(self):
+    async def list_tokens(self):
         """
         Gathers a list of all registration tokens
 
-        :return: List of token
+        :return: List of token_details
         """
-        r = requests.get(self.base_url, headers=self.headers)
-        return r.json()["registration_tokens"]
+        await self.ensure_session()
+        async with self.session.get(self.endpoint, headers=self.headers) as r:
+            assert r.status == 200
+            return (await r.json())["registration_tokens"]
 
-    def get_token(self, token):
+    async def get_token(self, token):
         """
         Gets token
 
-        :return: token as dict
+        :return: token_details as dict
         """
+        await self.ensure_session()
         if self.valid_token_format(token):
-            r = requests.get(self.base_url + f"/{token}", headers=self.headers)
+            async with self.session.get(self.endpoint + f"/{token}", headers=self.headers) as r:
+                if r.status != 200:
+                    raise FileNotFoundError("Token not found")
+                else:
+                    return await r.json()
         else:
             raise TypeError("Token is not a valid format!")
-        return r.json()
 
-    def delete_all_token(self):
+    async def delete_all_token(self):
         """
         Deletes all token
 
         :return: List of deleted token
         """
-        all_tokens = self.list_tokens()
+        all_tokens = await self.list_tokens()
         for token in all_tokens:
-            self.delete_token(token["token"])
+            await self.delete_token(token["token"])
         return all_tokens
 
-    def delete_token(self, token: str):
+    async def delete_token(self, token: str):
         """
         Deletes the given token
 
         :param token:
-        :return: The token that is deleted
+        :return: The token_details that is deleted as dict
         """
+        await self.ensure_session()
         if self.valid_token_format(token):
-            r_token = requests.get(self.base_url + f"/{token}", headers=self.headers)
-            if r_token.status_code != 200:
-                raise FileNotFoundError("Token not found")
+            r_token = await self.session.get(f"{self.endpoint}/{token}", headers=self.headers)
+            if r_token.status != 200:
+                print(await r_token.json())
+                raise FileNotFoundError(f"{r_token.status} Token not found")
             else:
-                token = r_token.json()
-                r = requests.delete(self.base_url + f"/{token}", headers=self.headers)
-                return token
+                token_details = await r_token.json()
+                async with self.session.delete(f"{self.endpoint}/{token}", headers=self.headers) as r:
+                    return token_details
         else:
-            raise TypeError("Token is not a valid format!")
+            raise ValueError("Token is not a valid format!")
 
-    def create_token(self, expiry_days=7):
+    async def create_token(self, expiry_days=7):
         """
-        Create a token for registering an user
+        Create a token for registering a user
 
         expire_days:int
             Determines how long the token will be valid (in days)
+        :return: token_details
         """
         expiry_time = int(datetime.timestamp(datetime.now() + timedelta(days=expiry_days)) * 1000)
         data = '{"uses_allowed": 1, "expiry_time": ' + str(expiry_time) + '}'
-        r = requests.post(self.base_url + "/new", headers=self.headers, data=data)
-        return r.json()
+        async with self.session.delete(f"{self.endpoint}/new", data=data, headers=self.headers) as r:
+            return await r.json()

@@ -28,7 +28,7 @@ api = RegistrationAPI(api_base_url, api_endpoint, api_token)
 async def list_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
     if match.is_not_from_this_bot() and match.prefix() and match.command("list"):
-        token_list = api.list_tokens()
+        token_list = await api.list_tokens()
         if len(token_list) < 10:
             message = "\n".join([RegistrationAPI.token_to_markdown(token) for token in token_list])
         else:
@@ -61,7 +61,7 @@ async def delete_all_token(room, message):
     match = botlib.MessageMatch(room, message, bot, PREFIX)
 
     if match.is_not_from_this_bot() and match.prefix() and match.command("delete-all"):
-        deleted_tokens = api.delete_all_token()
+        deleted_tokens = await api.delete_all_token()
         await send_info_on_deleted_token(room, deleted_tokens)
 
 
@@ -74,9 +74,10 @@ async def delete_token(room, message):
         for token in match.args():
             token = token.strip()
             try:
-                token = api.delete_token(token)
-                deleted_tokens.append(token)
-            except TypeError as e:
+                deleted_tokens.append(await api.delete_token(token))
+            except ValueError as e:
+                await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
+            except FileNotFoundError as e:
                 await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
         await send_info_on_deleted_token(room, deleted_tokens)
 
@@ -90,7 +91,7 @@ async def show_token(room, message):
         for token in match.args():
             token = token.strip()
             try:
-                token_info = api.get_token(token)
+                token_info = await api.get_token(token)
                 tokens_info.append(RegistrationAPI.token_to_markdown(token_info))
             except TypeError as e:
                 await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
