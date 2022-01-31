@@ -76,6 +76,13 @@ and then open a Direct Message to the bot. The type one of the following command
 * `allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
 * `disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted commands
 
+# Permissions
+
+By default, any user on the homeserver of the bot is allowed to use restricted commands. You can change that,
+by using the `allow` command to configure one (or multiple) specific user. Read the [simple-matrix-bot documentation](https://simple-matrix-bot-lib.readthedocs.io/en/latest/manual.html#allowlist)
+for more information. If you get locked out for any reason, simply modify the config.toml that is created in the bots
+working directory.
+
 # Contributing
 
 Feel free to contribute or discuss this bot with me. You can reach me via @moanos:hyteck.de. The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).

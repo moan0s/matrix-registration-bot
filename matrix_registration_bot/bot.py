@@ -19,7 +19,11 @@ creds = botlib.Creds(bot_server,
 
 # Load a config file that configures bot behaviour
 config = botlib.Config()
-config.load_toml("config.toml")
+SIMPLE_MATRIX_BOT_CONFIG_FILE = "config.toml"
+try:
+    config.load_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
+except FileNotFoundError:
+    config.save_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
 
 bot = botlib.Bot(creds, config)
 
