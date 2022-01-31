@@ -29,12 +29,19 @@ help_string = (
     f"""**[Matrix Registration Bot](https://github.com/moan0s/matrix-registration-bot/)** {matrix_registration_bot.__version__}
 You can always message my creator [@moanos:hyteck.de](https://matrix.to/#/@moanos:hyteck.de) if you have questions
 
+**Unrestricted commands**
+
 * `help`: Shows this help
+
+**Restricted commands**
+
 * `list`: Lists all registration tokens
 * `show <token>`: Shows token details in human-readable format
 * `create`: Creates a token that that is valid for one registration for seven days
 * `delete <token>` Deletes the specified token(s)
 * `delete-all` Deletes all tokens
+* `allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
+* `disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted commands
 """)
 
 

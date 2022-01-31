@@ -64,12 +64,17 @@ and then open a Direct Message to the bot. The type one of the following command
 
 # Supported commands
 
-* `!help`: Shows this help
-* `!list`: Lists all registration token
-* `!show <token>`: Shows token details in human-readable format
-* `!create`: Creates a token that that is valid for one registration for seven days
-* `!delete <token>` Deletes the specified token
-* `!delete-all` Deletes all token
+**Unrestricted commands**
+* `help`: Shows this help
+
+**Restricted commands**
+* `list`: Lists all registration tokens
+* `show <token>`: Shows token details in human-readable format
+* `create`: Creates a token that that is valid for one registration for seven days
+* `delete <token>` Deletes the specified token(s)
+* `delete-all` Deletes all tokens
+* `allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
+* `disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted commands
 
 # Contributing
 
