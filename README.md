@@ -4,6 +4,8 @@ This bot aims to create and manage registration tokens for a matrix server. It w
 It does not create a user itself, but rather aims to make use of the Matrix standard [MSC3231](https://github.com/matrix-org/matrix-doc/blob/main/proposals/3231-token-authenticated-registration.md).
 The feature was added in Matrix v1.2. More information can be found in the [Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
 
+If you have any questions, or if you need help setting it up, come join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de)
+
 # Getting started
 
 ## Prerequisites
@@ -39,7 +41,7 @@ Configure the bot with a file named `config.yml`. It should look like this
 ```yaml
 bot:
   server: "https://synapse.example.com"
-  username: "registerbot"
+  username: "registration-bot"
   access_token: "verysecret"
 api:
   # API endpoint of the registration tokens
@@ -61,6 +63,38 @@ python -m matrix_registration_bot.bot
 ```
 
 and then open a Direct Message to the bot. The type one of the following commands.
+
+# Systemd
+
+To have the bot start automatically after reboots create the file `/etc/systemd/system/matrix-registration-bot.service`
+with the following content on your server. This assumes you use docker and that you place your configuration in
+`/matrix/matrix-registration-bot/config.yml`.
+```
+[Unit]
+Description=matrix-registration-bot
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+
+WorkingDirectory=/matrix/matrix-registration-bot
+ExecStart=python3 -m matrix_registration_bot.bot
+
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-registration-bot
+
+[Install]
+WantedBy=multi-user.target
+```
+
+After creating the service reload your daemon and start+enable the service.
+```bash
+$ sudo systemctl daemon-reload
+$ sudo systemctl start matrix-registration-bot
+$ sudo systemclt enable matrix-registration-bot
+```
 
 # Supported commands
 
