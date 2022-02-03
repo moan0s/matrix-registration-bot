@@ -7,7 +7,6 @@ import logging
 with open('config.yml', 'r') as file:
     config = yaml.safe_load(file)
 
-
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.INFO)
 
 bot_server = config['bot']['server']
@@ -48,7 +47,8 @@ api = RegistrationAPI(api_base_url, api_endpoint, api_token)
 
 help_string = (
     f"""**[Matrix Registration Bot](https://github.com/moan0s/matrix-registration-bot/)** {matrix_registration_bot.__version__}
-You can always message my creator [@moanos:hyteck.de](https://matrix.to/#/@moanos:hyteck.de) if you have questions
+You can always ask for help in
+[#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de)!
 
 **Unrestricted commands**
 
@@ -96,6 +96,8 @@ async def token_actions(room, message):
 
         if match.command("delete"):
             deleted_tokens = []
+            if not len(match.args()) > 0:
+                await bot.api.send_markdown_message(room.room_id, "You must give a token!")
             for token in match.args():
                 token = token.strip()
                 try:
@@ -109,6 +111,9 @@ async def token_actions(room, message):
 
         if match.command("show"):
             tokens_info = []
+            if not len(match.args()) > 0:
+                await bot.api.send_markdown_message(room.room_id, "You must give a token!")
+                return
             for token in match.args():
                 token = token.strip()
                 try:
@@ -118,7 +123,8 @@ async def token_actions(room, message):
                     await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
                 except TypeError as e:
                     await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
-            await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
+            if len(tokens_info) > 0:
+                await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
 
         if match.command("allow"):
             bot.config.add_allowlist(set(match.args()))
