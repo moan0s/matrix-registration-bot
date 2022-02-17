@@ -9,7 +9,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="matrix-registration-bot",
-    version="0.0.2",
+    version="1.0.0",
     description="A bot to manage user registration tokens on a matrix server.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -24,7 +24,6 @@ setup(
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: GNU Affero General Public License v3",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
