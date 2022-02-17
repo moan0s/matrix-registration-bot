@@ -131,13 +131,13 @@ class RegistrationAPI:
             r_token = await self.session.get(f"{self.endpoint}/{token}", headers=self.headers)
             if r_token.status != 200:
                 print(await r_token.json())
-                raise FileNotFoundError(f"{r_token.status} Token not found")
+                raise FileNotFoundError(f"{r_token.status} Token {token} not found")
             else:
                 token_details = await r_token.json()
                 async with self.session.delete(f"{self.endpoint}/{token}", headers=self.headers) as r:
                     return token_details
         else:
-            raise ValueError("Token is not a valid format!")
+            raise ValueError(f"Token {token} is not a valid format!")
 
     async def create_token(self, expiry_days=7):
         """
