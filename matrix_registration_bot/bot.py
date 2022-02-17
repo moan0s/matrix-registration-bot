@@ -1,3 +1,4 @@
+import cryptography
 import simplematrixbotlib as botlib
 import matrix_registration_bot
 from matrix_registration_bot.registration_api import RegistrationAPI
@@ -151,5 +152,9 @@ async def send_info_on_deleted_token(room, token_list):
         message = "No token deleted"
     await bot.api.send_markdown_message(room.room_id, message)
 
-
-bot.run()
+try:
+    bot.run()
+except cryptography.fernet.InvalidToken:
+    logging.error("The token does not seem to fit the saved session. this can happen if you change the bot user."
+                  "If this is the case, deleting the session.txt and restarting the bot might help")
+    exit(1)
