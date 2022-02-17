@@ -2,6 +2,11 @@
 
 This bot aims to create and manage registration tokens for a matrix server. It wants to help invitation based servers to maintain usability.
 It does not create a user itself, but rather aims to make use of the Matrix standard [MSC3231](https://github.com/matrix-org/matrix-doc/blob/main/proposals/3231-token-authenticated-registration.md).
+
+This means, that a user that registers on your server has to provide a registration token to successfully create an
+account. The token can be created by interacting with this bot. So to invite a friend you would send `create` to the bot
+which answers with an token. You send the token to the friend and they can uses this to create an account.
+
 The feature was added in Matrix v1.2. More information can be found in the [Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
 
 If you have any questions, or if you need help setting it up, come join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de)
@@ -43,6 +48,8 @@ bot:
   server: "https://synapse.example.com"
   username: "registration-bot"
   access_token: "verysecret"
+  # It is also possible to use a password based login by commenting out the access token line and adjusting the line below
+  # password: "secretpassword" 
 api:
   # API endpoint of the registration tokens
   base_url: 'https://synapse.example.com'
@@ -52,8 +59,6 @@ api:
 
 
 ```
-
-
 
 # Usage
 
@@ -119,6 +124,8 @@ working directory.
 
 # Contributing
 
-Feel free to contribute or discuss this bot with me. You can reach me via @moanos:hyteck.de. The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).
+Feel free to contribute or discuss this bot at [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
+The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).
+
 
 [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)
