@@ -4,8 +4,18 @@ import matrix_registration_bot
 from matrix_registration_bot.registration_api import RegistrationAPI
 import yaml
 import logging
+import argparse
 
-with open('config.yml', 'r') as file:
+parser = argparse.ArgumentParser(description='Start the matrix-registration-bot.')
+
+parser.add_argument('--config', default=None, help='Specify a configuration file to use')
+
+args = parser.parse_args()
+if args.config is None:
+    config_path = 'config.yml'
+else:
+    config_path = args.config
+with open(config_path, 'r') as file:
     config = yaml.safe_load(file)
 
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.INFO)
