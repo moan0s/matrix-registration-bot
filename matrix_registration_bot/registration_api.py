@@ -1,5 +1,4 @@
 import re
-from requests.structures import CaseInsensitiveDict
 from datetime import datetime, timedelta
 import aiohttp
 
@@ -9,8 +8,7 @@ class RegistrationAPI:
         self.base_url = base_url
         self.endpoint = endpoint
         self.api_token = api_token
-        self.headers = CaseInsensitiveDict()
-        self.headers["Authorization"] = f"Bearer {api_token}"
+        self.headers = {"Authorization": f"Bearer {api_token}"}
         self.session = None
 
     def __str__(self):
