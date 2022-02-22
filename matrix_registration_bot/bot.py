@@ -2,7 +2,7 @@ import cryptography
 import simplematrixbotlib as botlib
 import matrix_registration_bot
 from matrix_registration_bot.registration_api import RegistrationAPI
-import yaml
+from matrix_registration_bot.config import Config
 import logging
 import argparse
 
@@ -15,10 +15,7 @@ if args.config is None:
     config_path = 'config.yml'
 else:
     config_path = args.config
-with open(config_path, 'r') as file:
-    config = yaml.safe_load(file)
-
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.INFO)
+config = Config(config_path)
 
 bot_server = config['bot']['server']
 bot_username = config['bot']['username']
@@ -39,20 +36,20 @@ except KeyError:
                          username=bot_username,
                          password=bot_access_password)
 api_base_url = config['api']['base_url']
-api_endpoint = config['api']['endpoint']
+api_endpoint = '/_synapse/admin/v1/registration_tokens'
 api_token = config['api']['token']
 
 # Load a config file that configures bot behaviour
-config = botlib.Config()
+smbl_config = botlib.Config()
 SIMPLE_MATRIX_BOT_CONFIG_FILE = "config.toml"
 try:
-    config.load_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
+    smbl_config.load_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
     logging.info(f"Loaded the simple-matrix-bot config file {SIMPLE_MATRIX_BOT_CONFIG_FILE}")
 except FileNotFoundError:
     logging.info(f"No simple-matrix-bot config file found. Creating {SIMPLE_MATRIX_BOT_CONFIG_FILE}")
-    config.save_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
+    smbl_config.save_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
 
-bot = botlib.Bot(creds, config)
+bot = botlib.Bot(creds, smbl_config)
 
 api = RegistrationAPI(api_base_url, api_endpoint, api_token)
 

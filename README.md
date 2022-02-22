@@ -53,9 +53,10 @@ bot:
 api:
   # API endpoint of the registration tokens
   base_url: 'https://synapse.example.com'
-  endpoint: '/_synapse/admin/v1/registration_tokens'
   # Access token of an administrator on the server
   token: "supersecret"
+logging:
+  level: DEBUG|INFO|ERROR
 
 
 ```
