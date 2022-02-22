@@ -17,3 +17,10 @@ git push origin v1.0.0
 Afterwards you should mark the tag as release and include a changelog. Try to use a similar structure as previous
 releases.
 
+# Upload to PyPi
+```
+$ python setup.py bdist_wheel
+$ twine upload dist/* 
+```
+
+
