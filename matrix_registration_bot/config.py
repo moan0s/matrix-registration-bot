@@ -19,7 +19,6 @@ class Config(dict):
                     self.extend_by_dict(yaml.safe_load(file))
             except FileNotFoundError:
                 logging.error(f"Cold not find bot configuration at {config_path}")
-                exit(1)
 
         """
         This maps all self.keys (e.g. "LOGGING_LEVEL") that are in the environment to the corresponding config value
