@@ -63,6 +63,9 @@ logging:
 
 ```
 
+It is also possible to use environment variables to configure the bot. The variable names are all upper case,
+concatenated with `_` e.g. `LOGGING_LEVEL`.
+
 # Usage
 
 Start the bot with 
