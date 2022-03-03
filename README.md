@@ -7,7 +7,7 @@ It does not create a user itself, but rather aims to make use of the Matrix stan
 
 This means, that a user that registers on your server has to provide a registration token to successfully create an
 account. The token can be created by interacting with this bot. So to invite a friend you would send `create` to the bot
-which answers with an token. You send the token to the friend and they can uses this to create an account.
+which answers with a token. You send the token to the friend, and they can use this to create an account.
 
 The feature was added in Matrix v1.2. More information can be found in the [Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
 
@@ -29,8 +29,8 @@ registration_requires_token: true
 **Create a bot account**
 
 Then you need to create an account for the bot on the server, like you would do with any other account.
-A good username is `registration-bot`. Also note the access token of the bot. One way to get the token is to login as 
-the bot and got to Settings -> Help & About -> Access Token in Element.
+A good username is `registration-bot`. If you want to use token based login, note the access token of the bot.
+One way to get the token is to login as the bot and got to `Settings -> Help & About -> Access Token` in Element.
 
 Once you are finished you can start the installation of the bot.
 
@@ -130,8 +130,15 @@ working directory.
 
 # Contributing
 
-Feel free to contribute or discuss this bot at [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
-The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).
+Feel free to contribute or discuss this bot at [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de)
+or simply open issues and PRs here.
 
 
 [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)
+
+# Related Projects
+
+* The project is made possible by [Simple-Matrix-Bot-Lib](https://simple-matrix-bot-lib.readthedocs.io).
+* An alternative for managing tokens is [Synapse Admin](https://github.com/Awesome-Technologies/synapse-admin)
+
+
