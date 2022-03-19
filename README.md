@@ -1,6 +1,8 @@
 # Matrix Registration Bot
 
 ![Pypi badge](https://img.shields.io/pypi/v/matrix-registration-bot.svg)
+![License](https://img.shields.io/pypi/l/matrix-registration-bot?color=%23008000)
+![Docker pulls](https://img.shields.io/docker/pulls/moanos/matrix-registration-bot)
 
 This bot aims to create and manage registration tokens for a matrix server. It wants to help invitation based servers to
 maintain usability. It does not create a user itself, but allows registration only with a valid token as defined by
