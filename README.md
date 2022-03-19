@@ -7,20 +7,44 @@
 This bot aims to create and manage registration tokens for a matrix server. It wants to help invitation based servers to
 maintain usability. It does not create a user itself, but allows registration only with a valid token as defined by
 Matrix standard
-[MSC3231](https://github.com/matrix-org/matrix-doc/blob/main/proposals/3231-token-authenticated-registration.md).
-The benefit is, that an administrator minimizes manual work and does not know a user's password at any time.
-
-
+[MSC3231](https://github.com/matrix-org/matrix-doc/blob/main/proposals/3231-token-authenticated-registration.md). The
+benefit is, that an administrator minimizes manual work and does not know a user's password at any time.
 
 This means, that a user that registers on your server has to provide a registration token to successfully create an
 account. The token can be created by interacting with this bot. So to invite a friend you would send `create` to the bot
 which answers with a token. You send the token to the friend, and they can use this to create an account.
 
 The feature was added in Matrix v1.2. More information can be found in the
-[Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html).
+[Synapse Documentation](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html)
+.
 
 If you have any questions, or if you need help setting it up, read the [troublshooting guide](./docs/troubleshooting.md)
 or join [#matrix-registration-bot:hyteck.de](https://matrix.to/#/#matrix-registration-bot:hyteck.de).
+
+# Supported commands
+
+**Unrestricted commands**
+
+* `help`: Shows this help
+
+**Restricted commands**
+
+* `list`: Lists all registration tokens
+* `show <token>`: Shows token details in human-readable format
+* `create`: Creates a token that that is valid for one registration for seven days
+* `delete <token>` Deletes the specified token(s)
+* `delete-all` Deletes all tokens
+* `allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
+* `disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted
+  commands
+
+# Permissions
+
+By default, any user on the homeserver of the bot is allowed to use restricted commands. You can change that, by using
+the `allow` command to configure one (or multiple) specific user. Read
+the [simple-matrix-bot documentation](https://simple-matrix-bot-lib.readthedocs.io/en/latest/manual.html#allowlist)
+for more information. If you get locked out for any reason, simply modify the config.toml that is created in the bots
+working directory.
 
 # Getting started
 
@@ -43,7 +67,7 @@ is to login as the bot and got to `Settings -> Help & About -> Access Token` in 
 
 Once you are finished you can start the installation of the bot.
 
-## Installation
+## Manual Installation
 
 The installation can easily be done via [PyPi](https://pypi.org/project/matrix-registration-bot/)
 
@@ -120,30 +144,27 @@ $ sudo systemctl start matrix-registration-bot
 $ sudo systemclt enable matrix-registration-bot
 ```
 
-# Supported commands
+# Docker
 
-**Unrestricted commands**
+To use this container via docker you can create the following `docker-compose.yml` and start the container
+with `docker-compose up -d`. Explanation on how to obtain the correct values of the configuration can be found in the 
+**Manual installation** section.
 
-* `help`: Shows this help
+``` yaml
+version: "3.7"
 
-**Restricted commands**
+services:
+  matrix-registration-bot:
+    image: moanos/matrix-registration-bot:latest
+    environment:
+      LOGGING_LEVEL: DEBUG
+      BOT_SERVER: "https://synapse.example.com"
+      BOT_USERNAME: "registration-bot"
+      BOT_PASSWORD: "password"
+      API_BASE_URL: 'https://synapse.example.com'
+      API_TOKEN: "syt_xxxxxxxxxxxxxxxxxxxxxxxx"
 
-* `list`: Lists all registration tokens
-* `show <token>`: Shows token details in human-readable format
-* `create`: Creates a token that that is valid for one registration for seven days
-* `delete <token>` Deletes the specified token(s)
-* `delete-all` Deletes all tokens
-* `allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
-* `disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted
-  commands
-
-# Permissions
-
-By default, any user on the homeserver of the bot is allowed to use restricted commands. You can change that, by using
-the `allow` command to configure one (or multiple) specific user. Read
-the [simple-matrix-bot documentation](https://simple-matrix-bot-lib.readthedocs.io/en/latest/manual.html#allowlist)
-for more information. If you get locked out for any reason, simply modify the config.toml that is created in the bots
-working directory.
+```
 
 # Contributing
 
