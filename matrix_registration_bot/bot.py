@@ -86,7 +86,12 @@ async def token_actions(room, message):
     elif match.is_not_from_this_bot() and match.is_from_allowed_user():
         if match.command("list"):
             logging.info(f"{match.event.sender} listed all tokens")
-            token_list = await api.list_tokens()
+            try:
+                token_list = await api.list_tokens()
+            except ConnectionError as e:
+                logging.warning(f"Error while trying to list all tokens: {e}")
+                await error_handler(room, e)
+                return
             if len(token_list) < 10:
                 message = "\n".join([RegistrationAPI.token_to_markdown(token) for token in token_list])
             else:
@@ -95,9 +100,13 @@ async def token_actions(room, message):
             await bot.api.send_markdown_message(room.room_id, message)
 
         if match.command("create"):
-            token = await api.create_token()
-            logging.info(f"{match.event.sender} created token {token}")
-            await bot.api.send_markdown_message(room.room_id, f"{RegistrationAPI.token_to_markdown(token)}")
+            try:
+                token = await api.create_token()
+                logging.info(f"{match.event.sender} created token {token}")
+                await bot.api.send_markdown_message(room.room_id, f"{RegistrationAPI.token_to_markdown(token)}")
+            except (ConnectionError, PermissionError) as e:
+                logging.warning(f"Error while trying to create a token: {e}")
+                await error_handler(room, e)
 
         if match.command("delete-all"):
             deleted_tokens = await api.delete_all_token()
@@ -115,10 +124,13 @@ async def token_actions(room, message):
                     deleted_tokens.append(await api.delete_token(token))
                 except ValueError as e:
                     logging.info(f"Token {token} given by {match.event.sender} to delete was not in correct format")
-                    await bot.api.send_markdown_message(room.room_id, f"**Error**: {e.args[0]}")
+                    await error_handler(room, e)
                 except FileNotFoundError as e:
                     logging.info(f"Token {token} given by {match.event.sender} to delete was not found")
-                    await bot.api.send_markdown_message(room.room_id, f"**Error**: {e.args[0]}")
+                    await error_handler(room, e)
+                except ConnectionError as e:
+                    logging.warning(f"Error: {e} while trying to get a token")
+                    await error_handler(room, e)
             logging.info(f"{match.event.sender} deleted token {deleted_tokens}")
             await send_info_on_deleted_token(room, deleted_tokens)
 
@@ -134,12 +146,15 @@ async def token_actions(room, message):
                     token_info = await api.get_token(token)
                     logging.info(f"Showing {token} to {match.event.sender}")
                     tokens_info.append(RegistrationAPI.token_to_markdown(token_info))
+                except ConnectionError as e:
+                    logging.warning(f"Error while trying to get a token: {e}")
+                    await error_handler(room, e)
                 except FileNotFoundError as e:
                     logging.info(f"Token {token} given by {match.event.sender} to show was not found")
-                    await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
+                    await error_handler(room, e)
                 except TypeError as e:
                     logging.info(f"Token {token} given by {match.event.sender} to show was not in correct format")
-                    await bot.api.send_text_message(room.room_id, f"Error: {e.args[0]}")
+                    await error_handler(room, e)
             if len(tokens_info) > 0:
                 await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
 
@@ -168,9 +183,17 @@ async def send_info_on_deleted_token(room, token_list):
         message = "No token deleted"
     await bot.api.send_markdown_message(room.room_id, message)
 
-try:
-    bot.run()
-except cryptography.fernet.InvalidToken:
-    logging.error("The token does not seem to fit the saved session. this can happen if you change the bot user."
-                  "If this is the case, deleting the session.txt and restarting the bot might help")
-    exit(1)
+
+async def error_handler(room, error):
+    message = f"The bot encountered the following error:\n"
+    message += error.args[0]
+    await bot.api.send_markdown_message(room.room_id, message)
+
+
+if __name__ == "__main__":
+    try:
+        bot.run()
+    except cryptography.fernet.InvalidToken:
+        logging.error("The token does not seem to fit the saved session. this can happen if you change the bot user."
+                      "If this is the case, deleting the session.txt and restarting the bot might help")
+        exit(1)

@@ -19,6 +19,22 @@ class RegistrationAPI:
             self.session = aiohttp.ClientSession(self.base_url)
 
     @staticmethod
+    def verbose_response(r):
+        return f"The registration api returned `{r.status}: {r.reason}` for {r.method}: {r.url}"
+
+    @staticmethod
+    def check_response(r):
+        if r.status == 404:
+            raise FileNotFoundError("Token not found")
+        elif r.status == 401:
+            raise PermissionError(RegistrationAPI.verbose_response(r) +
+                                  f" Check, that the API access token is correct")
+        elif r.status != 200:
+            raise ConnectionError(RegistrationAPI.verbose_response(r))
+
+
+
+    @staticmethod
     def token_to_markdown(token_details: dict):
         """
         Converts a token to markdown string
@@ -86,7 +102,10 @@ class RegistrationAPI:
         """
         await self.ensure_session()
         async with self.session.get(self.endpoint, headers=self.headers) as r:
-            assert r.status == 200
+            try:
+                assert r.status == 200
+            except AssertionError:
+                raise ConnectionError(self.verbose_response(r))
             return (await r.json())["registration_tokens"]
 
     async def get_token(self, token):
@@ -98,10 +117,8 @@ class RegistrationAPI:
         await self.ensure_session()
         if self.valid_token_format(token):
             async with self.session.get(self.endpoint + f"/{token}", headers=self.headers) as r:
-                if r.status != 200:
-                    raise FileNotFoundError("Token not found")
-                else:
-                    return await r.json()
+                self.check_response(r)
+                return await r.json()
         else:
             raise TypeError("Token is not a valid format!")
 
@@ -126,14 +143,12 @@ class RegistrationAPI:
         """
         await self.ensure_session()
         if self.valid_token_format(token):
-            r_token = await self.session.get(f"{self.endpoint}/{token}", headers=self.headers)
-            if r_token.status != 200:
-                print(await r_token.json())
-                raise FileNotFoundError(f"{r_token.status} Token {token} not found")
-            else:
-                token_details = await r_token.json()
-                async with self.session.delete(f"{self.endpoint}/{token}", headers=self.headers) as r:
-                    return token_details
+            r = await self.session.get(f"{self.endpoint}/{token}", headers=self.headers)
+            self.check_response(r)
+            token_details = await r.json()
+            async with self.session.delete(f"{self.endpoint}/{token}", headers=self.headers) as r:
+                self.check_response(r)
+                return token_details
         else:
             raise ValueError(f"Token {token} is not a valid format!")
 
@@ -149,4 +164,5 @@ class RegistrationAPI:
         expiry_time = int(datetime.timestamp(datetime.now() + timedelta(days=expiry_days)) * 1000)
         data = '{"uses_allowed": 1, "expiry_time": ' + str(expiry_time) + '}'
         async with self.session.post(f"{self.endpoint}/new", data=data, headers=self.headers) as r:
+            self.check_response(r)
             return await r.json()
