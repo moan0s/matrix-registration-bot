@@ -1,0 +1,15 @@
+[Unit]
+Description=matrix-registration-bot
+
+[Service]
+Type=simple
+WorkingDirectory=/etc/matrix-registration-bot/
+ExecStart=/opt/venvs/matrix-registration-bot/bin/python3 -m matrix_registration_bot.bot
+User={{ matrix_registration_bot_system_user }}
+Group={{ matrix_registration_bot_system_user }}
+Restart=always
+RestartSec=30
+SyslogIdentifier=matrix-reg-bot
+
+[Install]
+WantedBy=multi-user.target

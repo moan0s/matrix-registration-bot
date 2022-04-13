@@ -1,0 +1,11 @@
+bot:
+  server: "{{ matrix_client_api_endpoint }}"
+  username: "{{ matrix_registration_bot_username }}"
+  access_token: "{{ matrix_registration_bot_token }}"
+api:
+  # API endpoint of the registration tokens
+  base_url: "{{ synapse_api_endpoint }}"
+  # Access token of an administrator on the server
+  token: "{{ synapse_admin_token }}"
+logging:
+  level: INFO

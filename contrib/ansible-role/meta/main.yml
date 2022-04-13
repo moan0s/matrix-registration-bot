@@ -1,0 +1,3 @@
+---
+name: Install Matrix registration bot
+become: yes
