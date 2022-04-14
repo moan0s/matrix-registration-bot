@@ -1,8 +1,8 @@
 import cryptography
 import simplematrixbotlib as botlib
-import matrix_registration_bot
-from matrix_registration_bot.registration_api import RegistrationAPI
-from matrix_registration_bot.config import Config
+from src import matrix_registration_bot
+from src.matrix_registration_bot.registration_api import RegistrationAPI
+from src.matrix_registration_bot.config import Config
 import logging
 import argparse
 
