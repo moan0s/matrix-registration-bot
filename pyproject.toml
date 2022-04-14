@@ -1,6 +1,34 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+
+
+[project]
+name = "matrix-registration-bot"
+description = "A bot to manage user registration tokens on a matrix server."
+
+keywords = ["matrix", "registration", "bot", "user", "registration", "API"  ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+    "simplematrixbotlib>=2.6.0,<3.0.0",
+    "pyyaml",
+    "aiohttp[speedups]",
+]
+dynamic = ["version", "readme"]
+
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.dynamic]
+version = {attr = "matrix-registration-bot.__version__"}
+readme = {file = "README.md"}
+
