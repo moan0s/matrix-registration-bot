@@ -1,0 +1,55 @@
+---
+- name: Update/install pip, virtualenv, setuptools and others
+  ansible.builtin.apt:
+    pkg:
+      - python3
+      - python3-pip
+      - python3-setuptools
+      - python3-virtualenv
+      - python3-cryptography
+      - python3-yaml
+    update_cache: yes
+    state: present
+- name: Update/install matrix-registration-bot
+  ansible.builtin.pip:
+    name:
+      - simplematrixbotlib>=2.6.0,<3.0.0
+      - aiohttp[speedups]
+      - matrix-registration-bot
+    state: latest
+    virtualenv: /opt/venvs/matrix-registration-bot
+    virtualenv_site_packages: yes
+- name: Ensure system user exists
+  ansible.builtin.user:
+    name: '{{ matrix_registration_bot_system_user }}'
+    create_home: no
+    home: /opt/venvs/matrix-registration-bot
+    state: present
+    system: yes
+- name: Ensure configuration directory exists
+  ansible.builtin.file:
+    path: /etc/matrix-registration-bot/
+    owner: '{{ matrix_registration_bot_system_user }}'
+    group: '{{ matrix_registration_bot_system_user }}'
+    mode: 0755
+    state: directory
+- name: Update configuration file
+  ansible.builtin.template:
+    src: config.yml.j2
+    dest: /etc/matrix-registration-bot/config.yml
+    owner: '{{ matrix_registration_bot_system_user }}'
+    group: '{{ matrix_registration_bot_system_user }}'
+    mode: 0600
+- name: Upload systemd service file
+  ansible.builtin.template:
+    src: matrix-registration-bot.service.j2
+    dest: /etc/systemd/system/matrix-registration-bot.service
+    owner: root
+    group: root
+    mode: 0644
+- name: Enable/Restart matrix-registration-bot
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: matrix-registration-bot.service
+    enabled: yes
+    state: restarted
