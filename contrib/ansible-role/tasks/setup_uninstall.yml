@@ -1,0 +1,33 @@
+---
+- name: Check existence of matrix-registration-bot service
+  stat:
+    path: "/etc/systemd/system/matrix-registration-bot.service"
+  register: matrix_registration_bot_service_stat
+
+- name: Stop/disable matrix-registration-bot
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: matrix-registration-bot.service
+    enabled: no
+    state: stopped
+  when: "matrix_registration_bot_service_stat.stat.exists|bool"
+
+- name: Ensure system user is removed
+  ansible.builtin.user:
+    name: matrix-registration-bot
+    state: absent
+    remove: yes
+- name: Ensure configuration directory is removed
+  ansible.builtin.file:
+    path: /etc/matrix-registration-bot/
+    state: absent
+- name: Ensure systemd service file doesn't exist
+  ansible.builtin.file:
+    path: /etc/systemd/system/matrix-registration-bot.service
+    state: absent
+  when: "matrix_registration_bot_service_stat.stat.exists|bool"
+
+- name: Ensure systemd reloaded after systemd service removal
+  service:
+    daemon_reload: true
+  when: "matrix_registration_bot_service_stat.stat.exists|bool"
