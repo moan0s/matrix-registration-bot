@@ -93,12 +93,19 @@ api:
   token: "supersecret"
 logging:
   level: DEBUG|INFO|ERROR
-
-
 ```
 
 It is also possible to use environment variables to configure the bot. The variable names are all upper case,
 concatenated with `_` e.g. `LOGGING_LEVEL`.
+
+### Obtaining access tokens
+
+Access tokens are generated per device and when using e.g. Element Web to fetch them,
+you must not sign out of that session, because otherwise the access token gets invalidated.
+The simplest method of keeping a session open is to log in to Element Web in a private tab 
+in your browser and getting the token from the Settings > Help & About page.
+Afterwards just close the tab to leave the device's session usable for the bot.
+
 
 # Usage
 
