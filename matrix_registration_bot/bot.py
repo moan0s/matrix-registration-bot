@@ -1,6 +1,6 @@
 import cryptography
 import simplematrixbotlib as botlib
-from matrix_registration_bot
+import matrix_registration_bot
 from matrix_registration_bot.registration_api import RegistrationAPI
 from matrix_registration_bot.config import Config
 import logging
@@ -190,10 +190,14 @@ async def error_handler(room, error):
     await bot.api.send_markdown_message(room.room_id, message)
 
 
-if __name__ == "__main__":
+def run_bot():
     try:
         bot.run()
     except cryptography.fernet.InvalidToken:
         logging.error("The token does not seem to fit the saved session. this can happen if you change the bot user."
                       "If this is the case, deleting the session.txt and restarting the bot might help")
         exit(1)
+
+
+if __name__ == "__main__":
+    run_bot()

@@ -24,11 +24,14 @@ dependencies = [
 ]
 dynamic = ["version", "readme"]
 
+[project.scripts]
+matrix-registration-bot = "matrix_registration_bot.bot"
+
 
 [tool.setuptools.packages]
 find = {}
 
 [tool.setuptools.dynamic]
-version = {attr = "matrix-registration-bot.__version__"}
+version = {attr = "matrix_registration_bot.__version__"}
 readme = {file = "README.md"}
 
