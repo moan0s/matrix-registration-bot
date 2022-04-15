@@ -92,7 +92,7 @@ api:
   # Access token of an administrator on the server
   token: "supersecret"
 logging:
-  level: DEBUG|INFO|ERROR
+  level: DEBUG/INFO/ERROR
 ```
 
 It is also possible to use environment variables to configure the bot. The variable names are all upper case,

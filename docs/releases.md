@@ -6,8 +6,9 @@ be addressed.
 The version number should follow best practices of [semantic versioning](https://semver.org/).
 
 When it is decided to release and the `develop` branch should include all commits and merge requests that should be
-released.  It is then merged into the main branch. On the main branch there are only two changes to make: Bump the
-version in `setup.py` and `matrix_registration_bot/__init__.py` and commit this with `Bump version to v1.0.0`
+released. Create the `README.rst` (for PyPi) with `pandoc --from=markdown --to=rst --output=README.rst README.md `. 
+Commit and then merge into the main branch. On the main branch there are only two changes to make: Bump the
+version in `matrix_registration_bot/__init__.py` and commit this with `Bump version to v1.0.0`
 
 Then create a git tag and push it to GitHub
 ```bash
