@@ -18,6 +18,7 @@ Use the Ansible Vault to store secrets.
 
 ### Variables
 
+* `matrix_registration_bot_enabled` True will enable the bot
 * `matrix_registration_bot_system_user` the username of the system user to run the bot as (will be created)
 * `matrix_client_api_endpoint` the Matrix client API base url to access (to access the `/_matrix/client/` endpoints)
 * `matrix_registration_bot_username` the Matrix username to identify as

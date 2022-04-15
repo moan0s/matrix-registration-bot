@@ -1,0 +1,15 @@
+---
+
+- name: Fail if required settings not defined
+  fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`).
+  when: "vars[item] == ''"
+  with_items:
+    - "matrix_registration_bot_enabled"
+    - "matrix_registration_bot_system_user"
+    - "matrix_client_api_endpoint"
+    - "matrix_registration_bot_username"
+    - "matrix_registration_bot_token"
+    - "synapse_api_endpoint"
+    - "synapse_admin_token"
