@@ -25,7 +25,7 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [project.scripts]
-matrix-registration-bot = "matrix_registration_bot.bot"
+matrix-registration-bot = "matrix_registration_bot.bot:run_bot"
 
 
 [tool.setuptools.packages]
