@@ -59,7 +59,7 @@ $ twine upload dist/*
 ## Docker
 
 ```bash
-docker build .
+docker build . --tag moanos/matrix-registration-bot:latest
 docker login
 docker push moanos/matrix-registration-bot:latest
 ```
