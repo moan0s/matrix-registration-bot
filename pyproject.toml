@@ -7,8 +7,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "matrix-registration-bot"
 description = "A bot to manage user registration tokens on a matrix server."
-
 keywords = ["matrix", "registration", "bot", "user", "registration", "API"  ]
+license = {text = "AGPL-3.0-or-later"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: System Administrators",
@@ -25,7 +25,7 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [project.scripts]
-matrix-registration-bot = "matrix_registration_bot.bot"
+matrix-registration-bot = "matrix_registration_bot.bot:run_bot"
 
 
 [tool.setuptools.packages]
@@ -33,5 +33,5 @@ find = {}
 
 [tool.setuptools.dynamic]
 version = {attr = "matrix_registration_bot.__version__"}
-readme = {file = "README.md"}
+readme = {file = "README.rst"}
 
