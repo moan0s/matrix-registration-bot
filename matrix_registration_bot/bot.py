@@ -15,7 +15,7 @@ if args.config is None:
     config_path = 'config.yml'
 else:
     config_path = args.config
-config = Config(config_path)
+config = Config(args.config)
 
 bot_server = config['bot']['server']
 bot_username = config['bot']['username']
