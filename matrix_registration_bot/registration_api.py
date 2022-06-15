@@ -25,7 +25,7 @@ class RegistrationAPI:
     @staticmethod
     def check_response(r):
         if r.status == 404:
-            raise FileNotFoundError("Token not found")
+            raise FileNotFoundError("Token not found or API not reachable (404 Not Found)")
         elif r.status == 401:
             raise PermissionError(RegistrationAPI.verbose_response(r) +
                                   f" Check, that the API access token is correct")

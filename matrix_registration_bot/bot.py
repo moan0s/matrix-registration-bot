@@ -104,7 +104,7 @@ async def token_actions(room, message):
                 token = await api.create_token()
                 logging.info(f"{match.event.sender} created token {token}")
                 await bot.api.send_markdown_message(room.room_id, f"{RegistrationAPI.token_to_markdown(token)}")
-            except (ConnectionError, PermissionError) as e:
+            except (ConnectionError, PermissionError, FileNotFoundError) as e:
                 logging.warning(f"Error while trying to create a token: {e}")
                 await error_handler(room, e)
 
