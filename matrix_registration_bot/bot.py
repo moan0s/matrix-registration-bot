@@ -78,13 +78,13 @@ You can always ask for help in
 async def token_actions(room, message):
     match = botlib.MessageMatch(room, message, bot)
     # Unrestricted commands
-    if match.is_not_from_this_bot() and match.contains("help"):
+    if match.is_not_from_this_bot() and (match.contains("help") or match.contains("Help")):
         """The help command should be accessible even to users that are not allowed"""
         logging.info(f"{match.event.sender} viewed the help")
         await bot.api.send_markdown_message(room.room_id, help_string)
     # Restricted commands
     elif match.is_not_from_this_bot() and match.is_from_allowed_user():
-        if match.command("list"):
+        if match.command("list") or match.command("List"):
             logging.info(f"{match.event.sender} listed all tokens")
             try:
                 token_list = await api.list_tokens()
@@ -99,7 +99,7 @@ async def token_actions(room, message):
                 message = f"All tokens: {', '.join(tokens_as_string)}"
             await bot.api.send_markdown_message(room.room_id, message)
 
-        if match.command("create"):
+        if match.command("create") or match.command("Create"):
             try:
                 token = await api.create_token()
                 logging.info(f"{match.event.sender} created token {token}")
@@ -108,12 +108,12 @@ async def token_actions(room, message):
                 logging.warning(f"Error while trying to create a token: {e}")
                 await error_handler(room, e)
 
-        if match.command("delete-all"):
+        if match.command("delete-all") or match.command("Delete-all"):
             deleted_tokens = await api.delete_all_token()
             logging.info(f"{match.event.sender} deleted all tokens")
             await send_info_on_deleted_token(room, deleted_tokens)
 
-        if match.command("delete"):
+        if match.command("delete") or match.command("Delete"):
             deleted_tokens = []
             logging.info(f"{match.event.sender} tries to delete {match.args()}")
             if not len(match.args()) > 0:
@@ -134,7 +134,7 @@ async def token_actions(room, message):
             logging.info(f"{match.event.sender} deleted token {deleted_tokens}")
             await send_info_on_deleted_token(room, deleted_tokens)
 
-        if match.command("show"):
+        if match.command("show") or match.command("Show"):
             tokens_info = []
             logging.info(f"{match.event.sender} tries to show {match.args()}")
             if not len(match.args()) > 0:
@@ -158,7 +158,7 @@ async def token_actions(room, message):
             if len(tokens_info) > 0:
                 await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
 
-        if match.command("allow"):
+        if match.command("allow") or match.command("Allow"):
             bot.config.add_allowlist(set(match.args()))
             bot.config.save_toml("config.toml")
             logging.info(f"{match.event.sender} allowed {set(match.args())} (if valid)")
@@ -166,7 +166,7 @@ async def token_actions(room, message):
                 room.room_id,
                 f'allowing {", ".join(arg for arg in match.args())} (if valid)')
 
-        if match.command("disallow"):
+        if match.command("disallow") or match.command("Disallow"):
             bot.config.remove_allowlist(set(match.args()))
             logging.info(f"{match.event.sender} disallowed {set(match.args())} (if valid)")
             await bot.api.send_text_message(
