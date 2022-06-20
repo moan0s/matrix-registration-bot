@@ -106,7 +106,8 @@ this
      username: "registration-bot"
      access_token: "verysecret"
      # It is also possible to use a password based login by commenting out the access token line and adjusting the line below
-     # password: "secretpassword" 
+     # password: "secretpassword"
+     prefix: ""
    api:
      # API endpoint of the registration tokens
      base_url: 'https://synapse.example.com'

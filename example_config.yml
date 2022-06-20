@@ -2,6 +2,7 @@ bot:
   server: "https://synapse.example.com"
   username: "registerbot"
   access_token: "verysecret"
+  prefix: ""
 api:
   # API endpoint of the registration tokens
   base_url: 'https://synapse.example.com'

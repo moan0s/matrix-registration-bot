@@ -35,6 +35,9 @@ except KeyError:
     creds = botlib.Creds(bot_server,
                          username=bot_username,
                          password=bot_access_password)
+
+bot_prefix = config['bot']['prefix']
+
 api_base_url = config['api']['base_url']
 api_endpoint = '/_synapse/admin/v1/registration_tokens'
 api_token = config['api']['token']
@@ -60,30 +63,30 @@ You can always ask for help in
 
 **Unrestricted commands**
 
-* `help`: Shows this help
+* `{bot_prefix}help`: Shows this help
 
 **Restricted commands**
 
-* `list`: Lists all registration tokens
-* `show <token>`: Shows token details in human-readable format
-* `create`: Creates a token that that is valid for one registration for seven days
-* `delete <token>` Deletes the specified token(s)
-* `delete-all` Deletes all tokens
-* `allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
-* `disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted commands
+* `{bot_prefix}list`: Lists all registration tokens
+* `{bot_prefix}show <token>`: Shows token details in human-readable format
+* `{bot_prefix}create`: Creates a token that that is valid for one registration for seven days
+* `{bot_prefix}delete <token>` Deletes the specified token(s)
+* `{bot_prefix}delete-all` Deletes all tokens
+* `{bot_prefix}allow @user:example.com` Allows the specified user (or a user matching a regex pattern) to use restricted commands
+* `{bot_prefix}disallow @user:example.com` Stops a specified user (or a user matching a regex pattern) from using restricted commands
 """)
 
 
 @bot.listener.on_message_event
 async def token_actions(room, message):
-    match = botlib.MessageMatch(room, message, bot)
+    match = botlib.MessageMatch(room, message, bot, bot_prefix)
     # Unrestricted commands
-    if match.is_not_from_this_bot() and match.contains("help"):
+    if match.is_not_from_this_bot() and match.contains("help") and match.prefix():
         """The help command should be accessible even to users that are not allowed"""
         logging.info(f"{match.event.sender} viewed the help")
         await bot.api.send_markdown_message(room.room_id, help_string)
     # Restricted commands
-    elif match.is_not_from_this_bot() and match.is_from_allowed_user():
+    elif match.is_not_from_this_bot() and match.is_from_allowed_user() and match.prefix():
         if match.command("list"):
             logging.info(f"{match.event.sender} listed all tokens")
             try:
