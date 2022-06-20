@@ -64,6 +64,11 @@ class Config(dict):
             logging_level = logging.INFO
         logging.getLogger().setLevel(logging_level)
 
+        try:
+            self["bot"]["prefix"]
+        except KeyError:
+            self["bot"]["prefix"] = ""
+
     def extend_by_dict(self, data):
         for key in data:
             self[key] = data[key]
