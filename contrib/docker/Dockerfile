@@ -1,8 +1,7 @@
-FROM python:3 AS compile-image
+FROM python:3-slim AS compile-image
 MAINTAINER Julian-Samuel Gebühr
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends build-essential gcc
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential gcc
 
 RUN python -m venv /opt/venv
 RUN /opt/venv/bin/pip install --no-cache-dir matrix-registration-bot
