@@ -13,3 +13,14 @@ this is a misconfiguration of the bot in `config.yml`.
 
 Check if the chat with the bot is encrypted. The bot does not yet support encryption, therefore it will not work in such
 a room. You can circumvent this problem by creating an unencrypted room and invite the bot to it.
+
+## ERROR:The token does not seem to fit the saved session.
+
+This can happen if you change the bot user. If this is the case, deleting the session.txt and restarting the bot will help.
+The session.txt is located in the working directory of the bot. For the docker deployment you can run the following 
+command (make sure to adjust the container name if it is not `matrix-bot-matrix-registration-bot`).
+
+```bash
+docker exec -it matrix-bot-matrix-registration-bot rm /data/session.txt
+```
+
