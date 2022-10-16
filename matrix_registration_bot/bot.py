@@ -44,6 +44,8 @@ api_token = config['api']['token']
 
 # Load a config file that configures bot behaviour
 smbl_config = botlib.Config()
+smbl_config.emoji_verify = True
+smbl_config.ignore_unverified_devices = True
 SIMPLE_MATRIX_BOT_CONFIG_FILE = "config.toml"
 try:
     smbl_config.load_toml(SIMPLE_MATRIX_BOT_CONFIG_FILE)
