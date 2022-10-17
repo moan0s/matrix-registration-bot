@@ -48,9 +48,13 @@ working directory.
 
 # Getting started
 
-## Prerequisites
+## Install via [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy)
 
-**Server configuration**
+If you already installed your homeserver with this ansible playbook you can make use of a very simple setup. Check out [the setup instructions in the project's repo](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-bot-matrix-registration-bot.md).
+
+## Prerequisites for all other installation methods
+
+### Server configuration
 
 Your server should be configured to a token restricted registration. Add the following to your `homeserver.yaml`:
 
@@ -59,11 +63,11 @@ enable_registration: true
 registration_requires_token: true
 ```
 
-**Create a bot account**
+## Create a bot account
 
 Then you need to create an account for the bot on the server, like you would do with any other account. A good username
 is `registration-bot`. If you want to use token based login, note the access token of the bot. One way to get the token
-is to login as the bot and got to `Settings -> Help & About -> Access Token` in Element, however you mustn't log out or
+is to log in as the bot and got to `Settings -> Help & About -> Access Token` in Element, however you mustn't log out or
 the token will be invalidated. As an alternative you can use the command
 
 ```shell
@@ -99,7 +103,7 @@ bot:
 api:
   # API endpoint of the registration tokens
   base_url: 'https://synapse.example.com'
-  # Access token of an administrator on the server
+  # Access token of an administrator on the server. If you configured the bot to be an admin on the sever you can use the same token as above.
   token: "supersecret"
 logging:
   level: DEBUG/INFO/ERROR
@@ -108,16 +112,8 @@ logging:
 It is also possible to use environment variables to configure the bot. The variable names are all upper case,
 concatenated with `_` e.g. `LOGGING_LEVEL`.
 
-### Obtaining access tokens
 
-Access tokens are generated per device and when using e.g. Element Web to fetch them,
-you must not sign out of that session, because otherwise the access token gets invalidated.
-The simplest method of keeping a session open is to log in to Element Web in a private tab 
-in your browser and getting the token from the Settings > Help & About page.
-Afterwards just close the tab to leave the device's session usable for the bot.
-
-
-# Usage
+### Start the bot
 
 Start the bot with
 
@@ -127,17 +123,15 @@ python -m matrix_registration_bot.bot
 
 and then open a Direct Message to the bot. The type one of the following commands.
 
-# Systemd
+### Automatically (re-)start the bot with Systemd
 
 To have the bot start automatically after reboots create the file `/etc/systemd/system/matrix-registration-bot.service`
-with the following content on your server. This assumes you use docker and that you place your configuration in
+with the following content on your server. This assumes you use that you place your configuration in
 `/matrix/matrix-registration-bot/config.yml`.
 
 ```
 [Unit]
 Description=matrix-registration-bot
-Requires=docker.service
-After=docker.service
 
 [Service]
 Type=simple
@@ -161,7 +155,7 @@ $ sudo systemctl start matrix-registration-bot
 $ sudo systemclt enable matrix-registration-bot
 ```
 
-# Docker
+## Install using docker-compose
 
 To use this container via docker you can create the following `docker-compose.yml` and start the container
 with `docker-compose up -d`. Explanation on how to obtain the correct values of the configuration can be found in the 
