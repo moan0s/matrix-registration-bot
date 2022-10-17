@@ -176,6 +176,11 @@ services:
       API_TOKEN: "syt_xxxxxxxxxxxxxxxxxxxxxxxx"
 
 ```
+git checkout de
+# End-to-End Encryption
+
+From version 1.2.0 the bot supports E2E encryption. This is a bit safer and also allows to create direct messages (which are by default encrypted).
+This will be enabled by default.
 
 # Contributing
 
