@@ -1,4 +1,4 @@
-# 1.1.8
+# 1.2.0
 
 **NO user action needed**
 
