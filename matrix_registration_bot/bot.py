@@ -171,6 +171,7 @@ async def token_actions(room, message):
 
         if match.command("disallow"):
             bot.config.remove_allowlist(set(match.args()))
+            bot.config.save_toml("config.toml")
             logging.info(f"{match.event.sender} disallowed {set(match.args())} (if valid)")
             await bot.api.send_text_message(
                 room.room_id,
