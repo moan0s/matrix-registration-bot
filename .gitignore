@@ -1,5 +1,6 @@
 config.yml
 session.txt
+**/store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
