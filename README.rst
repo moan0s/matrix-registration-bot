@@ -79,7 +79,17 @@ Then you need to create an account for the bot on the server, like you
 would do with any other account. A good username is
 ``registration-bot``. If you want to use token based login, note the
 access token of the bot. One way to get the token is to login as the bot
-and got to ``Settings -> Help & About -> Access Token`` in Element.
+and got to ``Settings -> Help & About -> Access Token`` in Element,
+however you mustn't log out or the token will be invalidated. As an
+alternative you can use the command
+
+.. code:: bash
+
+   curl -X POST --header 'Content-Type: application/json' -d '{
+       "identifier": { "type": "m.id.user", "user": "YourBotUsername" },
+       "password": "YourBotPassword",
+       "type": "m.login.password"
+   }' 'https://matrix.YOURDOMAIN/_matrix/client/r0/login'
 
 Once you are finished you can start the installation of the bot.
 
