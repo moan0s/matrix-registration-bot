@@ -18,8 +18,9 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
-    "simplematrixbotlib>=2.6.0,<3.0.0",
+    "simplematrixbotlib>=2.7.3,<3.0.0",
     "pyyaml",
+    "matrix-nio[e2e]",
     "aiohttp[speedups]",
 ]
 dynamic = ["version", "readme"]
