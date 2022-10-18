@@ -1,4 +1,4 @@
-simplematrixbotlib>=2.6.0,<3.0.0
+simplematrixbotlib>=2.7.3,<3.0.0
 matrix-nio[e2e]
 pyyaml
 aiohttp[speedups]
