@@ -1,10 +1,17 @@
 FROM python:3-slim AS compile-image
 MAINTAINER Julian-Samuel Gebühr
 
+
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential gcc libolm-dev
 
 RUN python -m venv /opt/venv
-RUN /opt/venv/bin/pip install --no-cache-dir matrix-registration-bot
+
+WORKDIR /app
+COPY requirements.txt ./
+RUN /opt/venv/bin/pip install -r requirements.txt
+COPY . .
+RUN /opt/venv/bin/pip install .
+RUN /opt/venv/bin/pip install matrix-nio==0.20.2
 
 FROM python:3-slim
 
