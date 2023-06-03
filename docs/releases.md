@@ -27,39 +27,40 @@ twine check dist/*
 twine upload -r testpypi dist/*
 ```
 
-### Test docker image creation
-
-Test the build of the docker file with the version from Test-PyPI, you can use the following `Dockerfile` and `docker build .`
-```Dockerfile
-FROM python:latest
-MAINTAINER Julian-Samuel Gebühr
-
-RUN apt-get update && apt-get install -y pip
-RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN pip install -i https://test.pypi.org/simple/ matrix-registration-bot
-CMD ["matrix-registration-bot"]
-```
 
 ## Release
 
 Create a git tag and push it to GitHub
+
 ```bash
 git tag -a v1.0.0 -m "Releasing version v1.0.0"
 git push origin v1.0.0
 ```
-Afterwards you should mark the tag as release and include a changelog. Try to use a similar structure as previous
+Afterward, you should mark the tag as release and include a changelog. Try to use a similar structure as previous
 releases.
 
 ## Upload to PyPi
-```
+
+```bash
 $ python -m build
 $ twine upload dist/* 
 ```
 
 ## Docker
 
+First build the latest docker version and test it.
 ```bash
 docker build . --tag moanos/matrix-registration-bot:latest
-docker login
-docker push moanos/matrix-registration-bot:latest
+docker run -e "CONFIG_PATH=/config/config.yml" --mount type=bind,src=./config.yml,dst=/config/config.yml,ro moanos/matrix-registration-bot:latest
 ```
+
+If that looks good you can tag it with the appropriate docker version. Docker versions should follow the versioning
+of `<package-version>-0` where 0 ist the docker iteration and is increased by one for each docker build of the same
+package version. This helps if the package is okay but the docker build has an error.
+
+Publish the image with
+```bash
+docker login
+docker push moanos/matrix-registration-bot:1.2.2-0
+```
+and don't forget to update [spantaleev/matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/ddbbd42718b15172cdf409f2c1050362d42c3151/roles/custom/matrix-bot-matrix-registration-bot/defaults/main.yml#L11).
