@@ -8,6 +8,7 @@ RUN /opt/venv/bin/pip install --no-cache-dir matrix-registration-bot
 
 FROM python:3-slim
 
+RUN apt-get update && libolm-dev
 COPY --from=compile-image /opt/venv /opt/venv
 
 VOLUME ["/data"]
