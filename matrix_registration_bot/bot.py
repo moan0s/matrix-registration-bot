@@ -38,10 +38,6 @@ except KeyError:
 
 bot_prefix = config['bot']['prefix']
 
-api_base_url = config['api']['base_url']
-api_endpoint = '/_synapse/admin/v1/registration_tokens'
-api_token = config['api']['token']
-
 # Load a config file that configures bot behaviour
 smbl_config = botlib.Config()
 smbl_config.emoji_verify = True
@@ -56,7 +52,30 @@ except FileNotFoundError:
 
 bot = botlib.Bot(creds, smbl_config)
 
-api = RegistrationAPI(api_base_url, api_endpoint, api_token)
+api_base_url = config['api']['base_url']
+api_endpoint = '/_synapse/admin/v1/registration_tokens'
+
+"""
+Here we get the configured credentials for the admin API.
+We first check if an API token is set, if not we try if there are credentials set in the api section of the config
+and after that we use the credentials provided for the bot. Users are encouraged to use the last option, but we allow
+to overwrite this.
+"""
+try:
+    api_token = config['api']['token']
+    api = RegistrationAPI(api_base_url, api_endpoint, api_token)
+    logging.info("Using API token from api section of config")
+except KeyError:
+    try:
+        admin_username = config['api']['username']
+        admin_password = config['api']['password']
+        logging.info("Using username/password from api section of config")
+    except KeyError:
+        admin_username = config['bot']['username']
+        admin_password = config['bot']['password']
+        logging.info("Using username/password from bot section of config")
+    # The API interface will obtain an API token by itself
+    api = RegistrationAPI(api_base_url, api_endpoint, username=admin_username, password=admin_password)
 
 help_string = (
     f"""**[Matrix Registration Bot](https://github.com/moan0s/matrix-registration-bot/)** {matrix_registration_bot.__version__}
