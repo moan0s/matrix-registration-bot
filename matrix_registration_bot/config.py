@@ -55,6 +55,12 @@ class Config(dict):
             self[scope][k] = environ[key]
             logging.debug(f"{key} set via environment")
 
+        try:
+            self["logging"]
+        except KeyError:
+            self["logging"] = dict()
+            self["logging"]["level"] = "error"
+
         """Set the logging level according to config"""
         if self["logging"]['level'] in ["debug", "DEBUG"]:
             logging_level = logging.DEBUG
