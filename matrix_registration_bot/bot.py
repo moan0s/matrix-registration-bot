@@ -65,7 +65,7 @@ to overwrite this.
 """
 try:
     api_token = config['api']['token']
-    api = RegistrationAPI(api_base_url, api_endpoint, api_token)
+    api = RegistrationAPI(api_base_url, api_token)
     logging.info("Using API token from api section of config")
 except KeyError:
     try:
@@ -77,7 +77,7 @@ except KeyError:
         admin_password = config['bot']['password']
         logging.info("Using username/password from bot section of config")
     # The API interface will obtain an API token by itself
-    api = RegistrationAPI(api_base_url, api_endpoint, username=admin_username, password=admin_password)
+    api = RegistrationAPI(api_base_url, username=admin_username, password=admin_password)
 
 help_string = (
     f"""**[Matrix Registration Bot](https://github.com/moan0s/matrix-registration-bot/)** {matrix_registration_bot.__version__}

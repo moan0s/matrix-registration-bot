@@ -5,16 +5,16 @@ import aiohttp
 
 
 class RegistrationAPI:
-    def __init__(self, base_url: str, endpoint: str, api_token: str = "", username: str = "", password: str = "",
+    def __init__(self, base_url: str, api_token: str = "", username: str = "", password: str = "",
                  device_ID: str = "matrix-registration-bot"):
         self.base_url = base_url
-        self.endpoint = endpoint
         self.api_token = api_token
         self.username = username
         self.password = password
         self.device_ID = device_ID
         self.headers = {"Authorization": f"Bearer {api_token}"}
         self.session = None
+        self.registration_token_endpoint = '/_synapse/admin/v1/registration_tokens'
 
     def __str__(self):
         return f"API Connection to {self.base_url}"
@@ -128,7 +128,7 @@ class RegistrationAPI:
         :return: List of token_details
         """
         await self.ensure_api()
-        async with self.session.get(self.endpoint, headers=self.headers) as r:
+        async with self.session.get(self.registration_token_endpoint, headers=self.headers) as r:
             try:
                 assert r.status == 200
             except AssertionError:
@@ -143,7 +143,7 @@ class RegistrationAPI:
         """
         await self.ensure_api()
         if self.valid_token_format(token):
-            async with self.session.get(self.endpoint + f"/{token}", headers=self.headers) as r:
+            async with self.session.get(self.registration_token_endpoint + f"/{token}", headers=self.headers) as r:
                 self.check_response(r)
                 return await r.json()
         else:
@@ -170,10 +170,10 @@ class RegistrationAPI:
         """
         await self.ensure_api()
         if self.valid_token_format(token):
-            r = await self.session.get(f"{self.endpoint}/{token}", headers=self.headers)
+            r = await self.session.get(f"{self.registration_token_endpoint}/{token}", headers=self.headers)
             self.check_response(r)
             token_details = await r.json()
-            async with self.session.delete(f"{self.endpoint}/{token}", headers=self.headers) as r:
+            async with self.session.delete(f"{self.registration_token_endpoint}/{token}", headers=self.headers) as r:
                 self.check_response(r)
                 return token_details
         else:
@@ -190,6 +190,6 @@ class RegistrationAPI:
         await self.ensure_api()
         expiry_time = int(datetime.timestamp(datetime.now() + timedelta(days=expiry_days)) * 1000)
         data = '{"uses_allowed": 1, "expiry_time": ' + str(expiry_time) + '}'
-        async with self.session.post(f"{self.endpoint}/new", data=data, headers=self.headers) as r:
+        async with self.session.post(f"{self.registration_token_endpoint}/new", data=data, headers=self.headers) as r:
             self.check_response(r)
             return await r.json()
