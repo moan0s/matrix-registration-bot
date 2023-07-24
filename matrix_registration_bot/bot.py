@@ -52,8 +52,10 @@ except FileNotFoundError:
 
 bot = botlib.Bot(creds, smbl_config)
 
-api_base_url = config['api']['base_url']
-api_endpoint = '/_synapse/admin/v1/registration_tokens'
+try:
+    api_base_url = config['api']['base_url']
+except KeyError:
+    api_base_url = bot_server
 
 """
 Here we get the configured credentials for the admin API.
