@@ -100,105 +100,150 @@ You can always ask for help in
 """)
 
 
+def allowed_required(func):
+    async def wrapper(match, room, *args, **kwargs):
+        if match.is_from_allowed_user():
+            await func(match, room, *args, **kwargs)
+        else:
+            logging.info(f"{match.event.sender} tried to execute {func}")
+            await bot.api.send_markdown_message(
+                room.room_id,
+                f'You are not allowed to do that (restricted command). Ask someone to allow you (send `help` to find '
+                f'out more)')
+
+    return wrapper
+
+
+@allowed_required
+async def action_list(match, room):
+    logging.info(f"{match.event.sender} listed all tokens")
+    try:
+        token_list = await api.list_tokens()
+    except ConnectionError as e:
+        logging.warning(f"Error while trying to list all tokens: {e}")
+        await error_handler(room, e)
+        return
+    if len(token_list) < 10:
+        message = "\n".join([RegistrationAPI.token_to_markdown(token) for token in token_list])
+    else:
+        tokens_as_string = [RegistrationAPI.token_to_short_markdown(token) for token in token_list]
+        message = f"All tokens: {', '.join(tokens_as_string)}"
+    await bot.api.send_markdown_message(room.room_id, message)
+
+
+@allowed_required
+async def action_create_token(match, room):
+    try:
+        token = await api.create_token()
+        logging.info(f"{match.event.sender} created token {token}")
+        await bot.api.send_markdown_message(room.room_id, f"{RegistrationAPI.token_to_markdown(token)}")
+    except (ConnectionError, PermissionError, FileNotFoundError) as e:
+        logging.warning(f"Error while trying to create a token: {e}")
+        await error_handler(room, e)
+
+
+@allowed_required
+async def action_delete(match, room):
+    deleted_tokens = []
+    logging.info(f"{match.event.sender} tries to delete {match.args()}")
+    if not len(match.args()) > 0:
+        await bot.api.send_markdown_message(room.room_id, "You must give a token!")
+    for token in match.args():
+        token = token.strip()
+        try:
+            deleted_tokens.append(await api.delete_token(token))
+        except ValueError as e:
+            logging.info(f"Token {token} given by {match.event.sender} to delete was not in correct format")
+            await error_handler(room, e)
+        except FileNotFoundError as e:
+            logging.info(f"Token {token} given by {match.event.sender} to delete was not found")
+            await error_handler(room, e)
+        except ConnectionError as e:
+            logging.warning(f"Error: {e} while trying to get a token")
+            await error_handler(room, e)
+    logging.info(f"{match.event.sender} deleted token {deleted_tokens}")
+    await send_info_on_deleted_token(room, deleted_tokens)
+
+
+@allowed_required
+async def action_delete_all(match, room):
+    deleted_tokens = await api.delete_all_token()
+    logging.info(f"{match.event.sender} deleted all tokens")
+    await send_info_on_deleted_token(room, deleted_tokens)
+
+
+@allowed_required
+async def action_show(match, room):
+    tokens_info = []
+    logging.info(f"{match.event.sender} tries to show {match.args()}")
+    if not len(match.args()) > 0:
+        await bot.api.send_markdown_message(room.room_id, "You must give a token!")
+        return
+    for token in match.args():
+        token = token.strip()
+        try:
+            token_info = await api.get_token(token)
+            logging.info(f"Showing {token} to {match.event.sender}")
+            tokens_info.append(RegistrationAPI.token_to_markdown(token_info))
+        except ConnectionError as e:
+            logging.warning(f"Error while trying to get a token: {e}")
+            await error_handler(room, e)
+        except FileNotFoundError as e:
+            logging.info(f"Token {token} given by {match.event.sender} to show was not found")
+            await error_handler(room, e)
+        except TypeError as e:
+            logging.info(f"Token {token} given by {match.event.sender} to show was not in correct format")
+            await error_handler(room, e)
+    if len(tokens_info) > 0:
+        await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
+
+
+@allowed_required
+async def action_allow(match, room):
+    sender = match.event.sender
+    bot.config.add_allowlist(set(match.args()).union(set([sender,])))
+    bot.config.save_toml("config.toml")
+    logging.info(f"{match.event.sender} allowed {set(match.args())} (if valid)")
+    await bot.api.send_text_message(
+        room.room_id,
+        f'allowing {", ".join(arg for arg in match.args())} (if valid)')
+
+
+@allowed_required
+async def action_disallow(match, room):
+    bot.config.remove_allowlist(set(match.args()))
+    bot.config.save_toml("config.toml")
+    logging.info(f"{match.event.sender} disallowed {set(match.args())} (if valid)")
+    await bot.api.send_text_message(
+        room.room_id,
+        f'disallowing {", ".join(arg for arg in match.args())} (if valid)')
+
 @bot.listener.on_message_event
 async def token_actions(room, message):
     match = botlib.MessageMatch(room, message, bot, bot_prefix)
-    # Unrestricted commands
-    if match.is_not_from_this_bot() and match.contains("help") and match.prefix():
-        """The help command should be accessible even to users that are not allowed"""
-        logging.info(f"{match.event.sender} viewed the help")
-        await bot.api.send_markdown_message(room.room_id, help_string)
-    # Restricted commands
-    elif match.is_not_from_this_bot() and match.is_from_allowed_user() and match.prefix():
+
+    if match.is_not_from_this_bot() and match.prefix():
+        # Unrestricted commands
+        if match.contains("help"):
+            """The help command should be accessible even to users that are not allowed"""
+            logging.info(f"{match.event.sender} viewed the help")
+            await bot.api.send_markdown_message(room.room_id, help_string)
+
+        # Restricted commands
         if match.command("list"):
-            logging.info(f"{match.event.sender} listed all tokens")
-            try:
-                token_list = await api.list_tokens()
-            except ConnectionError as e:
-                logging.warning(f"Error while trying to list all tokens: {e}")
-                await error_handler(room, e)
-                return
-            if len(token_list) < 10:
-                message = "\n".join([RegistrationAPI.token_to_markdown(token) for token in token_list])
-            else:
-                tokens_as_string = [RegistrationAPI.token_to_short_markdown(token) for token in token_list]
-                message = f"All tokens: {', '.join(tokens_as_string)}"
-            await bot.api.send_markdown_message(room.room_id, message)
-
-        if match.command("create"):
-            try:
-                token = await api.create_token()
-                logging.info(f"{match.event.sender} created token {token}")
-                await bot.api.send_markdown_message(room.room_id, f"{RegistrationAPI.token_to_markdown(token)}")
-            except (ConnectionError, PermissionError, FileNotFoundError) as e:
-                logging.warning(f"Error while trying to create a token: {e}")
-                await error_handler(room, e)
-
-        if match.command("delete-all"):
-            deleted_tokens = await api.delete_all_token()
-            logging.info(f"{match.event.sender} deleted all tokens")
-            await send_info_on_deleted_token(room, deleted_tokens)
-
-        if match.command("delete"):
-            deleted_tokens = []
-            logging.info(f"{match.event.sender} tries to delete {match.args()}")
-            if not len(match.args()) > 0:
-                await bot.api.send_markdown_message(room.room_id, "You must give a token!")
-            for token in match.args():
-                token = token.strip()
-                try:
-                    deleted_tokens.append(await api.delete_token(token))
-                except ValueError as e:
-                    logging.info(f"Token {token} given by {match.event.sender} to delete was not in correct format")
-                    await error_handler(room, e)
-                except FileNotFoundError as e:
-                    logging.info(f"Token {token} given by {match.event.sender} to delete was not found")
-                    await error_handler(room, e)
-                except ConnectionError as e:
-                    logging.warning(f"Error: {e} while trying to get a token")
-                    await error_handler(room, e)
-            logging.info(f"{match.event.sender} deleted token {deleted_tokens}")
-            await send_info_on_deleted_token(room, deleted_tokens)
-
-        if match.command("show"):
-            tokens_info = []
-            logging.info(f"{match.event.sender} tries to show {match.args()}")
-            if not len(match.args()) > 0:
-                await bot.api.send_markdown_message(room.room_id, "You must give a token!")
-                return
-            for token in match.args():
-                token = token.strip()
-                try:
-                    token_info = await api.get_token(token)
-                    logging.info(f"Showing {token} to {match.event.sender}")
-                    tokens_info.append(RegistrationAPI.token_to_markdown(token_info))
-                except ConnectionError as e:
-                    logging.warning(f"Error while trying to get a token: {e}")
-                    await error_handler(room, e)
-                except FileNotFoundError as e:
-                    logging.info(f"Token {token} given by {match.event.sender} to show was not found")
-                    await error_handler(room, e)
-                except TypeError as e:
-                    logging.info(f"Token {token} given by {match.event.sender} to show was not in correct format")
-                    await error_handler(room, e)
-            if len(tokens_info) > 0:
-                await bot.api.send_markdown_message(room.room_id, "\n".join(tokens_info))
-
-        if match.command("allow"):
-            bot.config.add_allowlist(set(match.args()))
-            bot.config.save_toml("config.toml")
-            logging.info(f"{match.event.sender} allowed {set(match.args())} (if valid)")
-            await bot.api.send_text_message(
-                room.room_id,
-                f'allowing {", ".join(arg for arg in match.args())} (if valid)')
-
-        if match.command("disallow"):
-            bot.config.remove_allowlist(set(match.args()))
-            bot.config.save_toml("config.toml")
-            logging.info(f"{match.event.sender} disallowed {set(match.args())} (if valid)")
-            await bot.api.send_text_message(
-                room.room_id,
-                f'disallowing {", ".join(arg for arg in match.args())} (if valid)')
+            await action_list(match, room)
+        elif match.command("create"):
+            await action_create_token(match, room)
+        elif match.command("delete-all"):
+            await action_delete_all(match, room)
+        elif match.command("delete"):
+            await action_delete(match, room)
+        elif match.command("show"):
+            await action_show(match, room)
+        elif match.command("allow"):
+            await action_allow(match, room)
+        elif match.command("disallow"):
+            await action_disallow(match, room)
 
 
 async def send_info_on_deleted_token(room, token_list):
