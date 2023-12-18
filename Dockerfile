@@ -1,4 +1,4 @@
-FROM python:3-slim AS compile-image
+FROM python:3.11-slim AS compile-image
 MAINTAINER Julian-Samuel Gebühr
 
 
@@ -13,7 +13,7 @@ COPY . .
 RUN /opt/venv/bin/pip install .
 RUN /opt/venv/bin/pip install matrix-nio==0.20.2
 
-FROM python:3-slim
+FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y libolm-dev
 COPY --from=compile-image /opt/venv /opt/venv
